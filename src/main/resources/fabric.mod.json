@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "morphmod",
+	"version": "${version}",
+	"name": "Morph",
+	"description": "Transform into any mob: take its shape, its stats and its powers.",
+	"authors": ["jmarc"],
+	"contact": {},
+	"license": "MIT",
+	"icon": "assets/morphmod/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["io.github.jmarc.morph.MorphMod"],
+		"client": ["io.github.jmarc.morph.client.MorphModClient"]
+	},
+	"mixins": [
+		"morphmod.mixins.json",
+		{
+			"config": "morphmod.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
