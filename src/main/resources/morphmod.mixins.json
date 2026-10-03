@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "io.github.jmarc.morph.mixin",
+	"package": "com.takumistudios.morphmod.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
 		"AvatarMixin",

@@ -31,6 +31,8 @@ bin/
 # fabric
 
 run/
+versions/*/build/
+versions/*/.gradle/
 
 # java
 
@@ -42,3 +44,4 @@ replay_*.log
 # minecraft logs
 
 logs/
+.morphmod-cache/

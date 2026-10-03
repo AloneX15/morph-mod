@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "id": "mis_personajes:explorador",
+  "name": "Explorador",
+  "free": true,
+  "scale": 1,
+  "model": "otter.geo.json",
+  "texture": "otter.png",
+  "animations": "otter.animation.json",
+  "profile": "fabric-1.21.1",
+  "bindings": {
+    "eat.main_hand": "eat.main_hand",
+    "eat.off_hand": "eat.off_hand"
+  },
+  "anchors": {
+    "right_hand": {
+      "bone": "right_hand_item"
+    },
+    "left_hand": {
+      "bone": "left_hand_item"
+    },
+    "head": {
+      "bone": "armorBipedHead"
+    },
+    "chest": {
+      "bone": "body_upper",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "right_arm": {
+      "bone": "right_arm",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "left_arm": {
+      "bone": "left_arm",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "right_leg": {
+      "bone": "right_leg",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "left_leg": {
+      "bone": "left_leg",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "right_foot": {
+      "bone": "right_leg",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "left_foot": {
+      "bone": "left_leg",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "elytra": {
+      "bone": "body_upper",
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    }
+  },
+  "emotes": {
+    "demo_dance": {
+      "animation": "emote.demo_dance",
+      "loop": true,
+      "seconds": 2,
+      "modes": [
+        "full",
+        "overlay"
+      ],
+      "bones": [
+        "left_arm",
+        "right_arm",
+        "body_upper",
+        "head"
+      ],
+      "free": true
+    }
+  }
+}

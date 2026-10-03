@@ -4,14 +4,18 @@
 	"version": "${version}",
 	"name": "Morph",
 	"description": "Transform into any mob: take its shape, its stats and its powers.",
-	"authors": ["jmarc"],
-	"contact": {},
+	"authors": ["TakumiStudios"],
+	"contact": {
+		"homepage": "https://github.com/AloneX15/morph-mod",
+		"sources": "https://github.com/AloneX15/morph-mod",
+		"issues": "https://github.com/AloneX15/morph-mod/issues"
+	},
 	"license": "MIT",
 	"icon": "assets/morphmod/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": ["io.github.jmarc.morph.MorphMod"],
-		"client": ["io.github.jmarc.morph.client.MorphModClient"]
+		"main": ["com.takumistudios.morphmod.MorphMod"],
+		"client": ["com.takumistudios.morphmod.client.MorphModClient"]
 	},
 	"mixins": [
 		"morphmod.mixins.json",
@@ -21,9 +25,11 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.19.5",
-		"minecraft": "~26.3",
+		"fabricloader": ">=${loader}",
+		"minecraft": "${minecraft}",
 		"java": ">=25",
-		"fabric-api": "*"
-	}
+		"fabric-api": "*",
+		"geckolib": ">=5.5"
+	},
+	"suggests": { "luckperms": "*" }
 }

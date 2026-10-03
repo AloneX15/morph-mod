@@ -5,7 +5,8 @@
 	"name": "Morph tests",
 	"environment": "*",
 	"entrypoints": {
-		"fabric-client-gametest": ["io.github.jmarc.morph.test.MorphClientGameTest"]
+		"fabric-gametest": ["com.takumistudios.morphmod.test.MorphGameTests", "com.takumistudios.morphmod.test.CharacterGameTests"],
+		"fabric-client-gametest": ["com.takumistudios.morphmod.test.MorphClientGameTest", "com.takumistudios.morphmod.test.CharacterMultiplayerGameTest"]
 	},
 	"depends": {
 		"morphmod": "*"

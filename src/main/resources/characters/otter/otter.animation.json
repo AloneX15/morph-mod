@@ -1,0 +1,643 @@
+{
+    "format_version":  "1.8.0",
+    "animations":  {
+                       "sleep":  {
+                                     "loop":  true,
+                                     "bones":  {
+                                                   "left_arm":  {
+                                                                    "rotation":  [
+                                                                                     -55.96906,
+                                                                                     28.17168,
+                                                                                     9.99312
+                                                                                 ]
+                                                                },
+                                                   "right_arm":  {
+                                                                     "rotation":  [
+                                                                                      -30,
+                                                                                      0,
+                                                                                      0
+                                                                                  ]
+                                                                 },
+                                                   "head":  {
+                                                                "rotation":  [
+                                                                                 0,
+                                                                                 20,
+                                                                                 0
+                                                                             ]
+                                                            },
+                                                   "right_leg":  {
+                                                                     "rotation":  [
+                                                                                      -3.97512,
+                                                                                      -8.08768,
+                                                                                      2.45321
+                                                                                  ]
+                                                                 },
+                                                   "left_leg":  {
+                                                                    "rotation":  [
+                                                                                     7.68664,
+                                                                                     -9.76061,
+                                                                                     -12.18558
+                                                                                 ]
+                                                                }
+                                               }
+                                 },
+                       "crossbow_charge_leftArm":  {
+                                                       "loop":  "hold_on_last_frame",
+                                                       "bones":  {
+                                                                     "left_arm":  {
+                                                                                      "rotation":  [
+                                                                                                       -75,
+                                                                                                       0,
+                                                                                                       0
+                                                                                                   ]
+                                                                                  },
+                                                                     "right_arm":  {
+                                                                                       "rotation":  [
+                                                                                                        -60.349,
+                                                                                                        -31.3213,
+                                                                                                        -16.4846
+                                                                                                    ]
+                                                                                   }
+                                                                 }
+                                                   },
+                       "shield_leftArm":  {
+                                              "loop":  true,
+                                              "bones":  {
+                                                            "left_arm":  {
+                                                                             "rotation":  [
+                                                                                              -63.88781,
+                                                                                              20.23035,
+                                                                                              -0.20119
+                                                                                          ]
+                                                                         }
+                                                        }
+                                          },
+                       "shield_rightArm":  {
+                                               "loop":  true,
+                                               "bones":  {
+                                                             "right_arm":  {
+                                                                               "rotation":  [
+                                                                                                -63.88781,
+                                                                                                -20.23035,
+                                                                                                0.20119
+                                                                                            ]
+                                                                           }
+                                                         }
+                                           },
+                       "elytras":  {
+                                       "loop":  true,
+                                       "bones":  {
+                                                     "left_arm":  {
+                                                                      "rotation":  [
+                                                                                       "-10 - (math.sin(query.anim_time * 900) * math.clamp(query.ground_speed * 100, 0, 20))",
+                                                                                       0,
+                                                                                       "-45 - (math.cos(query.anim_time * 900) * 5)"
+                                                                                   ]
+                                                                  },
+                                                     "right_arm":  {
+                                                                       "rotation":  [
+                                                                                        "-10 + (math.sin(query.anim_time * 900) * math.clamp(query.ground_speed * 100, 0, 20))",
+                                                                                        0,
+                                                                                        "45 + (math.cos(query.anim_time * 900) * 5)"
+                                                                                    ]
+                                                                   },
+                                                     "right_leg":  {
+                                                                       "rotation":  [
+                                                                                        "5 - (math.sin(query.anim_time * 1000) * math.clamp(query.ground_speed * 100, 0, 15))",
+                                                                                        0,
+                                                                                        5
+                                                                                    ]
+                                                                   },
+                                                     "left_leg":  {
+                                                                      "rotation":  [
+                                                                                       "5 + (math.sin(query.anim_time * 1000) * math.clamp(query.ground_speed * 100, 0, 15))",
+                                                                                       0,
+                                                                                       -5
+                                                                                   ]
+                                                                  }
+                                                 }
+                                   },
+                       "spyglass_leftArm":  {
+                                                "loop":  "hold_on_last_frame",
+                                                "bones":  {
+                                                              "left_arm":  {
+                                                                               "rotation":  [
+                                                                                                -112.5,
+                                                                                                22.5,
+                                                                                                0
+                                                                                            ]
+                                                                           }
+                                                          }
+                                            },
+                       "spyglass_rightArm":  {
+                                                 "loop":  "hold_on_last_frame",
+                                                 "bones":  {
+                                                               "right_arm":  {
+                                                                                 "rotation":  [
+                                                                                                  -112.5,
+                                                                                                  -22.5,
+                                                                                                  0
+                                                                                              ]
+                                                                             }
+                                                           }
+                                             },
+                       "bow_rightArm":  {
+                                            "loop":  "hold_on_last_frame",
+                                            "bones":  {
+                                                          "right_arm":  {
+                                                                            "rotation":  [
+                                                                                             -75,
+                                                                                             0,
+                                                                                             0
+                                                                                         ]
+                                                                        },
+                                                          "left_arm":  {
+                                                                           "rotation":  [
+                                                                                            -73.8265,
+                                                                                            21.6937,
+                                                                                            6.11911
+                                                                                        ]
+                                                                       }
+                                                      }
+                                        },
+                       "bow_leftArm":  {
+                                           "loop":  "hold_on_last_frame",
+                                           "bones":  {
+                                                         "left_arm":  {
+                                                                          "rotation":  [
+                                                                                           -75,
+                                                                                           0,
+                                                                                           0
+                                                                                       ]
+                                                                      },
+                                                         "right_arm":  {
+                                                                           "rotation":  [
+                                                                                            -73.8265,
+                                                                                            -21.6937,
+                                                                                            -6.1191
+                                                                                        ]
+                                                                       }
+                                                     }
+                                       },
+                       "eat.main_hand":  {
+                                             "loop":  true,
+                                             "bones":  {
+                                                           "right_arm":  {
+                                                                             "rotation":  [
+                                                                                              -22.5,
+                                                                                              0,
+                                                                                              0
+                                                                                          ]
+                                                                         }
+                                                       }
+                                         },
+                       "eat.off_hand":  {
+                                            "loop":  true,
+                                            "bones":  {
+                                                          "left_arm":  {
+                                                                           "rotation":  [
+                                                                                            -22.5,
+                                                                                            0,
+                                                                                            0
+                                                                                        ]
+                                                                       }
+                                                      }
+                                        },
+                       "brush_rightArm":  {
+                                              "loop":  true,
+                                              "bones":  {
+                                                            "right_arm":  {
+                                                                              "rotation":  [
+                                                                                               -22.5,
+                                                                                               0,
+                                                                                               0
+                                                                                           ]
+                                                                          }
+                                                        }
+                                          },
+                       "brush_leftArm":  {
+                                             "loop":  true,
+                                             "bones":  {
+                                                           "left_arm":  {
+                                                                            "rotation":  [
+                                                                                             -22.5,
+                                                                                             0,
+                                                                                             0
+                                                                                         ]
+                                                                        }
+                                                       }
+                                         },
+                       "goat_horn_rightArm":  {
+                                                  "loop":  true,
+                                                  "bones":  {
+                                                                "right_arm":  {
+                                                                                  "rotation":  [
+                                                                                                   -112.5,
+                                                                                                   -22.5,
+                                                                                                   0
+                                                                                               ]
+                                                                              }
+                                                            }
+                                              },
+                       "goat_horn_leftArm":  {
+                                                 "loop":  true,
+                                                 "bones":  {
+                                                               "left_arm":  {
+                                                                                "rotation":  [
+                                                                                                 -112.5,
+                                                                                                 22.5,
+                                                                                                 0
+                                                                                             ]
+                                                                            }
+                                                           }
+                                             },
+                       "hand_right_interact":  {
+                                                   "loop":  true,
+                                                   "bones":  {
+                                                                 "right_arm":  {
+                                                                                   "rotation":  [
+                                                                                                    -22.5,
+                                                                                                    0,
+                                                                                                    0
+                                                                                                ]
+                                                                               }
+                                                             }
+                                               },
+                       "hand_left_interact":  {
+                                                  "loop":  true,
+                                                  "bones":  {
+                                                                "left_arm":  {
+                                                                                 "rotation":  [
+                                                                                                  -22.5,
+                                                                                                  0,
+                                                                                                  0
+                                                                                              ]
+                                                                             }
+                                                            }
+                                              },
+                       "item_rightArm":  {
+                                             "loop":  true,
+                                             "bones":  {
+                                                           "right_arm":  {
+                                                                             "rotation":  [
+                                                                                              -22.5,
+                                                                                              0,
+                                                                                              0
+                                                                                          ]
+                                                                         }
+                                                       }
+                                         },
+                       "item_leftArm":  {
+                                            "loop":  true,
+                                            "bones":  {
+                                                          "left_arm":  {
+                                                                           "rotation":  [
+                                                                                            -22.5,
+                                                                                            0,
+                                                                                            0
+                                                                                        ]
+                                                                       }
+                                                      }
+                                        },
+                       "eat_leftArm":  {
+                                           "loop":  true,
+                                           "bones":  {
+                                                         "left_arm":  {
+                                                                          "rotation":  [
+                                                                                           -22.5,
+                                                                                           0,
+                                                                                           0
+                                                                                       ]
+                                                                      }
+                                                     }
+                                       },
+                       "eat_rightArm":  {
+                                            "loop":  true,
+                                            "bones":  {
+                                                          "right_arm":  {
+                                                                            "rotation":  [
+                                                                                             -22.5,
+                                                                                             0,
+                                                                                             0
+                                                                                         ]
+                                                                        }
+                                                      }
+                                        },
+                       "crossbow_charge_rightArm":  {
+                                                        "loop":  "hold_on_last_frame",
+                                                        "bones":  {
+                                                                      "left_arm":  {
+                                                                                       "rotation":  [
+                                                                                                        -60.34902,
+                                                                                                        31.3213,
+                                                                                                        16.48457
+                                                                                                    ]
+                                                                                   },
+                                                                      "right_arm":  {
+                                                                                        "rotation":  [
+                                                                                                         -75,
+                                                                                                         0,
+                                                                                                         0
+                                                                                                     ]
+                                                                                    }
+                                                                  }
+                                                    },
+                       "crossbow_leftArm":  {
+                                                "loop":  "hold_on_last_frame",
+                                                "bones":  {
+                                                              "left_arm":  {
+                                                                               "rotation":  [
+                                                                                                -75,
+                                                                                                0,
+                                                                                                0
+                                                                                            ]
+                                                                           },
+                                                              "right_arm":  {
+                                                                                "rotation":  [
+                                                                                                 -60.349,
+                                                                                                 -31.3213,
+                                                                                                 -16.4846
+                                                                                             ]
+                                                                            }
+                                                          }
+                                            },
+                       "crossbow_rightArm":  {
+                                                 "loop":  "hold_on_last_frame",
+                                                 "bones":  {
+                                                               "left_arm":  {
+                                                                                "rotation":  [
+                                                                                                 -60.34902,
+                                                                                                 31.3213,
+                                                                                                 16.48457
+                                                                                             ]
+                                                                            },
+                                                               "right_arm":  {
+                                                                                 "rotation":  [
+                                                                                                  -75,
+                                                                                                  0,
+                                                                                                  0
+                                                                                              ]
+                                                                             }
+                                                           }
+                                             },
+                       "trident_leftArm":  {
+                                               "loop":  "hold_on_last_frame",
+                                               "bones":  {
+                                                             "left_arm":  {
+                                                                              "rotation":  [
+                                                                                               -75,
+                                                                                               0,
+                                                                                               0
+                                                                                           ]
+                                                                          },
+                                                             "right_arm":  {
+                                                                               "rotation":  [
+                                                                                                -60.349,
+                                                                                                -31.3213,
+                                                                                                -16.4846
+                                                                                            ]
+                                                                           }
+                                                         }
+                                           },
+                       "trident_rightArm":  {
+                                                "loop":  "hold_on_last_frame",
+                                                "bones":  {
+                                                              "left_arm":  {
+                                                                               "rotation":  [
+                                                                                                -60.34902,
+                                                                                                31.3213,
+                                                                                                16.48457
+                                                                                            ]
+                                                                           },
+                                                              "right_arm":  {
+                                                                                "rotation":  [
+                                                                                                 -75,
+                                                                                                 0,
+                                                                                                 0
+                                                                                             ]
+                                                                            }
+                                                          }
+                                            },
+                       "idle":  {
+                                    "loop":  true,
+                                    "bones":  {
+                                                  "root":  {
+                                                               "rotation":  [
+                                                                                0,
+                                                                                0,
+                                                                                "(0 * math.clamp(query.ground_speed * 100, 0, 1)) + math.cos(query.anim_time * 600) * math.clamp(query.ground_speed * 100, 0, 4)"
+                                                                            ],
+                                                               "position":  [
+                                                                                0,
+                                                                                "-(math.sin(query.anim_time * 600) * math.clamp(query.ground_speed * 100, 0, 0.5))",
+                                                                                0
+                                                                            ]
+                                                           },
+                                                  "left_leg":  {
+                                                                   "rotation":  [
+                                                                                    "(math.sin(query.anim_time * 600) * math.clamp(query.ground_speed * 100, 0, 70))",
+                                                                                    0,
+                                                                                    0
+                                                                                ]
+                                                               },
+                                                  "right_leg":  {
+                                                                    "rotation":  [
+                                                                                     "-(math.sin(query.anim_time * 600) * math.clamp(query.ground_speed * 100, 0, 70))",
+                                                                                     0,
+                                                                                     0
+                                                                                 ]
+                                                                },
+                                                  "left_arm":  {
+                                                                   "rotation":  [
+                                                                                    "-(math.sin(query.anim_time * 600) * math.clamp(query.ground_speed * 100, 0, 70))",
+                                                                                    0,
+                                                                                    "-((math.cos(query.anim_time * 103.2) * 2.865) + 2.865)"
+                                                                                ]
+                                                               },
+                                                  "right_arm":  {
+                                                                    "rotation":  [
+                                                                                     "(math.sin(query.anim_time * 600) * math.clamp(query.ground_speed * 100, 0, 70)) - math.sin(query.right_hand_swing * 180) * 80",
+                                                                                     "(math.cos(query.right_hand_swing * -180) * 60) * math.clamp(query.right_hand_swing, 0, 1)",
+                                                                                     "((math.cos(query.anim_time * 103.2) * 2.865) + 2.865)"
+                                                                                 ]
+                                                                },
+                                                  "body":  {
+                                                               "rotation":  [
+                                                                                0,
+                                                                                0,
+                                                                                0
+                                                                            ]
+                                                           },
+                                                  "head":  {
+                                                               "rotation":  [
+                                                                                "query.pitch",
+                                                                                "query.yaw",
+                                                                                0
+                                                                            ]
+                                                           },
+                                                  "body_upper":  {
+                                                                     "rotation":  [
+                                                                                      "math.sin(query.anim_time * 103.2) * 2",
+                                                                                      0,
+                                                                                      0
+                                                                                  ]
+                                                                 }
+                                              }
+                                },
+                       "sneaking":  {
+                                        "loop":  true,
+                                        "bones":  {
+                                                      "left_arm":  {
+                                                                       "rotation":  [
+                                                                                        "-10-(math.sin(query.anim_time * 200) * math.clamp(query.ground_speed * 100, 0, 40))",
+                                                                                        0,
+                                                                                        0
+                                                                                    ]
+                                                                   },
+                                                      "right_arm":  {
+                                                                        "rotation":  [
+                                                                                         "-10+(math.sin(query.anim_time * 200) * math.clamp(query.ground_speed * 100, 0, 40))",
+                                                                                         0,
+                                                                                         0
+                                                                                     ]
+                                                                    },
+                                                      "body":  {
+                                                                   "rotation":  [
+                                                                                    28,
+                                                                                    0,
+                                                                                    0
+                                                                                ],
+                                                                   "position":  [
+                                                                                    0,
+                                                                                    -2,
+                                                                                    3
+                                                                                ]
+                                                               },
+                                                      "head":  {
+                                                                   "rotation":  [
+                                                                                    -22.5,
+                                                                                    0,
+                                                                                    0
+                                                                                ]
+                                                               },
+                                                      "right_leg":  {
+                                                                        "rotation":  [
+                                                                                         "(-math.sin(query.anim_time * 200) * math.clamp(query.ground_speed * 100, 0, 40))",
+                                                                                         0,
+                                                                                         0
+                                                                                     ],
+                                                                        "position":  [
+                                                                                         0,
+                                                                                         -1,
+                                                                                         2
+                                                                                     ]
+                                                                    },
+                                                      "left_leg":  {
+                                                                       "rotation":  [
+                                                                                        "(math.sin(query.anim_time * 200) * math.clamp(query.ground_speed * 100, 0, 40))",
+                                                                                        0,
+                                                                                        0
+                                                                                    ],
+                                                                       "position":  [
+                                                                                        0,
+                                                                                        -1,
+                                                                                        2
+                                                                                    ]
+                                                                   }
+                                                  }
+                                    },
+                       "swimming":  {
+                                        "loop":  true,
+                                        "bones":  {
+                                                      "body_upper":  {
+                                                                         "rotation":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          0
+                                                                                      ]
+                                                                     },
+                                                      "left_arm":  {
+                                                                       "rotation":  [
+                                                                                        "-48.8898 - (math.cos(query.anim_time * 300) * math.clamp(query.ground_speed * 100, 0, 80))",
+                                                                                        -75.83716,
+                                                                                        "-64.1869 + (math.sin(query.anim_time * 300) * math.clamp(query.ground_speed * 100, 0, 80))"
+                                                                                    ]
+                                                                   },
+                                                      "right_arm":  {
+                                                                        "rotation":  [
+                                                                                         "-48.8898 - (math.cos(query.anim_time * 300) * math.clamp(query.ground_speed * 100, 0, 80))",
+                                                                                         75.83716,
+                                                                                         "64.1869 - (math.sin(query.anim_time * 300) * math.clamp(query.ground_speed * 100, 0, 80))"
+                                                                                     ]
+                                                                    },
+                                                      "right_leg":  {
+                                                                        "rotation":  [
+                                                                                         "-(math.sin(query.anim_time * 300) * math.clamp(query.ground_speed * 100, 0, 70))",
+                                                                                         0,
+                                                                                         0
+                                                                                     ]
+                                                                    },
+                                                      "left_leg":  {
+                                                                       "rotation":  [
+                                                                                        "(math.sin(query.anim_time * 300) * math.clamp(query.ground_speed * 100, 0, 70))",
+                                                                                        0,
+                                                                                        0
+                                                                                    ]
+                                                                   },
+                                                      "head":  {
+                                                                   "rotation":  [
+                                                                                    -62.5,
+                                                                                    0,
+                                                                                    0
+                                                                                ]
+                                                               },
+                                                      "root":  {
+                                                                   "rotation":  [
+                                                                                    70,
+                                                                                    0,
+                                                                                    0
+                                                                                ],
+                                                                   "position":  [
+                                                                                    0,
+                                                                                    0,
+                                                                                    6
+                                                                                ]
+                                                               }
+                                                  }
+                                    },
+                       "emote.demo_dance":  {
+                                                "loop":  true,
+                                                "bones":  {
+                                                              "left_arm":  {
+                                                                               "rotation":  [
+                                                                                                "math.sin(query.anim_time * 180) * 35",
+                                                                                                0,
+                                                                                                -20
+                                                                                            ]
+                                                                           },
+                                                              "head":  {
+                                                                           "rotation":  [
+                                                                                            0,
+                                                                                            0,
+                                                                                            "math.sin(query.anim_time * 180) * 8"
+                                                                                        ]
+                                                                       },
+                                                              "right_arm":  {
+                                                                                "rotation":  [
+                                                                                                 "-math.sin(query.anim_time * 180) * 35",
+                                                                                                 0,
+                                                                                                 20
+                                                                                             ]
+                                                                            },
+                                                              "body_upper":  {
+                                                                                 "rotation":  [
+                                                                                                  0,
+                                                                                                  "math.sin(query.anim_time * 180) * 12",
+                                                                                                  0
+                                                                                              ]
+                                                                             }
+                                                          },
+                                                "animation_length":  2
+                                            }
+                   }
+}
