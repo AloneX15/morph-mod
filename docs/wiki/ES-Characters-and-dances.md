@@ -21,6 +21,8 @@ El modo debe estar permitido en el manifiesto. Si solo admite overlay, especific
 
 ## Probar la plantilla
 
+`demo_dance` es un emote de ejemplo que Morph añade a la plantilla de la nutria; las animaciones originales de la nutria son su caminar/idle, nadar, dormir y poses con objetos.
+
 ~~~text
 /morph character select morphmod:otter
 /morph emote list

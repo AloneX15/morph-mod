@@ -17,7 +17,7 @@ Un administrador puede concederte una forma con `/morph unlock minecraft:bat Nom
 
 Abre **J → Personajes**, selecciona **Otter** y pulsa Transformarse. Esta plantilla es gratuita por defecto y conserva las estadísticas y colisión humanas. No necesitas matar una nutria: los personajes tienen su propio sistema de acceso.
 
-En **Emotes**, elige `demo_dance`. Usa `full` para un baile completo o `overlay` para bailar mientras caminas. Detén el baile desde el menú o con:
+En **Emotes**, elige `demo_dance`, un emote de ejemplo añadido por Morph (no forma parte de las animaciones propias de la nutria, que son su caminar/idle, nadar, dormir y poses con objetos). Usa `full` para reproducirlo en todo el cuerpo u `overlay` para reproducirlo mientras caminas. Detén el emote desde el menú o con:
 
 ~~~text
 /morph emote stop

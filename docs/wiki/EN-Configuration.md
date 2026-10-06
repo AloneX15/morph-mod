@@ -8,14 +8,15 @@ Morph **0.3.0** · [Index](EN-Index.md) · [Español](ES-Configuration.md)
 
 ~~~json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "requireUnlock": true,
   "unlockOnKill": true,
   "maxHealthCap": 500.0,
   "damageMultiplier": 1.0,
   "cooldownMultiplier": 1.0,
   "allowFlight": true,
-  "abilitiesBreakBlocks": false
+  "abilitiesBreakBlocks": false,
+  "creeperBreaksBlocks": true
 }
 ~~~
 
@@ -23,7 +24,7 @@ Morph **0.3.0** · [Index](EN-Index.md) · [Español](ES-Configuration.md)
 
 | Field | Default | Range / effect |
 |---|---|---|
-| `schemaVersion` | 1 | Format version; retain 1 |
+| `schemaVersion` | 2 | Format version; retain 2 (version 1 files are upgraded automatically) |
 | `requireUnlock` | true | Requires unlocks for mob selection |
 | `unlockOnKill` | true | Unlocks a mob type when killed |
 | `maxHealthCap` | 500 | Finite number, 1–1024; caps morph maximum health |
@@ -31,6 +32,7 @@ Morph **0.3.0** · [Index](EN-Index.md) · [Español](ES-Configuration.md)
 | `cooldownMultiplier` | 1 | Finite number, 0–100; scales cooldowns |
 | `allowFlight` | true | Enables flight for forms with that passive |
 | `abilitiesBreakBlocks` | false | Enables destruction for abilities respecting this option |
+| `creeperBreaksBlocks` | true | The Creeper explosion breaks blocks like the real mob, subject to the `mobGriefing` gamerule |
 
 `requireUnlock` does not grant characters: they use `free`, unlocks and permissions. Disabling `unlockOnKill` does not erase existing forms.
 

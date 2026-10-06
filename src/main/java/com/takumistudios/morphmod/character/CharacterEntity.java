@@ -97,7 +97,8 @@ public final class CharacterEntity extends ArmorStand implements GeoEntity {
         setDeltaMovement(player.getDeltaMovement()); setOnGround(player.onGround()); setPose(player.getPose()); setShiftKeyDown(player.isShiftKeyDown());
         setSprinting(player.isSprinting()); setSwimming(player.isSwimming());
         setInvisible(player.isInvisible()); setRemainingFireTicks(player.getRemainingFireTicks());
-        for (EquipmentSlot slot : EquipmentSlot.values()) setItemSlot(slot, player.getItemBySlot(slot));
+        boolean equipment = com.takumistudios.morphmod.data.MorphAttachments.showsEquipment(player);
+        for (EquipmentSlot slot : EquipmentSlot.values()) setItemSlot(slot, equipment ? player.getItemBySlot(slot) : ItemStack.EMPTY);
         elytraAnimationState.tick();
         boolean moving = player.walkAnimation.isMoving() || player.getDeltaMovement().horizontalDistanceSqr() > 0.0001;
         locomotion = player.isSleeping() ? "sleep" : player.isPassenger() ? "sit" : player.isAutoSpinAttack() ? "riptide" : player.isFallFlying() ? "elytra"

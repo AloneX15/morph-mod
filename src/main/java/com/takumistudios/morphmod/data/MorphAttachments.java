@@ -40,6 +40,28 @@ public final class MorphAttachments {
 			.syncWith(Identifier.STREAM_CODEC.apply(ByteBufCodecs.list(MAX_FORMS)), AttachmentSyncPredicate.targetOnly())
 	);
 
+	/**
+	 * Whether this player's morph shows their armor and held items. Absent means hidden (default).
+	 * Synced to every client because all of them render the disguise.
+	 */
+	public static final AttachmentType<Boolean> SHOW_EQUIPMENT = AttachmentRegistry.create(
+		MorphMod.id("show_equipment"),
+		builder -> builder
+			.persistent(com.mojang.serialization.Codec.BOOL)
+			.copyOnDeath()
+			.syncWith(ByteBufCodecs.BOOL, AttachmentSyncPredicate.all())
+	);
+
+	/** Server-computed permission for the inventory equipment toggle. Only synced to the owner. */
+	public static final AttachmentType<Boolean> CAN_TOGGLE_EQUIPMENT = AttachmentRegistry.create(
+		MorphMod.id("can_toggle_equipment"),
+		builder -> builder.syncWith(ByteBufCodecs.BOOL, AttachmentSyncPredicate.targetOnly())
+	);
+
+	public static boolean showsEquipment(net.minecraft.world.entity.player.Player player) {
+		return Boolean.TRUE.equals(player.getAttached(SHOW_EQUIPMENT));
+	}
+
 	private MorphAttachments() {
 	}
 

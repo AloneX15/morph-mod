@@ -33,7 +33,7 @@ Mira el modelo en tercera persona, camina con overlay y comprueba el brazo en pr
 4. Recarga y selecciona `mis_personajes:explorador`.
 5. Abre la copia en Blockbench y modifica textura o geometría manteniendo canales y anclajes coherentes.
 
-El manifiesto descargable conserva `demo_dance`. Para vincular mecánicas, añade `"mob": "minecraft:bat"`: eso proporciona mecánicas del murciélago al aspecto de nutria. No transforma el modelo en un murciélago.
+El manifiesto descargable conserva `demo_dance`, un emote de ejemplo añadido por Morph para mostrar los dos modos de emote; el archivo de animación propio de la nutria aporta su caminar (dentro de `idle`), nadar, dormir y poses con objetos, no un baile. Para vincular mecánicas, añade `"mob": "minecraft:bat"`: eso proporciona mecánicas del murciélago al aspecto de nutria. No transforma el modelo en un murciélago.
 
 ## Qué se adaptó
 

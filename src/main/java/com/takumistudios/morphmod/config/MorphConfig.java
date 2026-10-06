@@ -25,7 +25,7 @@ public final class MorphConfig {
 		thread.setDaemon(true);
 		return thread;
 	});
-	public static final int CURRENT_VERSION = 1;
+	public static final int CURRENT_VERSION = 2;
 	private static final long MAX_CONFIG_BYTES = 64 * 1024;
 	public int schemaVersion = CURRENT_VERSION;
 	public boolean requireUnlock = true;
@@ -35,6 +35,8 @@ public final class MorphConfig {
 	public double cooldownMultiplier = 1.0;
 	public boolean allowFlight = true;
 	public boolean abilitiesBreakBlocks = false;
+	/** The Creeper explosion breaks blocks like the real mob (still subject to the mobGriefing gamerule). */
+	public boolean creeperBreaksBlocks = true;
 
 	public static CompletableFuture<MorphConfig> loadAsync(Path file) {
 		return CompletableFuture.supplyAsync(() -> load(file), IO);

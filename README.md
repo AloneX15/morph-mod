@@ -51,7 +51,8 @@ Por ejemplo, como **Warden** tienes 500 de vida y 30 de daño, lanzas el **Estal
 Puedes cambiar las teclas en *Opciones → Controles → Morph*.
 
 Para personajes personalizados, abre **J → Personajes**. Elige **Otter** para probar
-la plantilla incluida y entra en **Emotes** para reproducir `demo_dance`. Puedes
+la plantilla incluida y entra en **Emotes** para reproducir `demo_dance`, un emote de
+ejemplo añadido por el mod (la animación original de la nutria es su caminar e idle). Puedes
 asignar una tecla al menú de emotes desde los controles.
 
 <p align="center">
@@ -93,14 +94,15 @@ El archivo `config/morphmod.json` se crea en el primer arranque y solo lo lee el
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "requireUnlock": true,
   "unlockOnKill": true,
   "maxHealthCap": 500.0,
   "damageMultiplier": 1.0,
   "cooldownMultiplier": 1.0,
   "allowFlight": true,
-  "abilitiesBreakBlocks": false
+  "abilitiesBreakBlocks": false,
+  "creeperBreaksBlocks": true
 }
 ```
 
@@ -131,7 +133,9 @@ y distribuye los recursos a los clientes, que los guardan en caché por su hash.
 
 Abre **Emotes** desde el menú o asigna su tecla en Controles. Un baile **completo**
 se detiene al moverte o actuar; uno **superpuesto** anima los huesos de su máscara
-y permite caminar. La nutria incluye `demo_dance` en ambos modos.
+y permite caminar. La nutria incluye `demo_dance`, un emote de ejemplo añadido por el
+mod (balancea brazos y cabeza) que no forma parte de sus animaciones originales,
+en ambos modos.
 
 ```text
 /morph character list
@@ -221,9 +225,9 @@ La red usa protocolo 2; se ignoran solicitudes incompatibles y se limita la frec
 Los comandos siguen disponibles para clientes sin los canales de Morph; esos clientes
 no muestran el modelo ni la UI del mod. Para todas las funciones, instálalo en ambos lados.
 
-La configuración tiene `schemaVersion: 1`; valores antiguos se migran conservando ajustes.
+La configuración tiene `schemaVersion: 2`; valores antiguos se migran conservando ajustes.
 JSON inválido se guarda en `.bak`; números no finitos se sustituyen por defaults.
-Las explosiones no rompen bloques por defecto (`abilitiesBreakBlocks: false`).
+Las explosiones de habilidades no rompen bloques por defecto (`abilitiesBreakBlocks: false`), salvo la del Creeper, que rompe bloques como el mob real si `mobGriefing` está activo (`creeperBreaksBlocks: true`).
 
 ## Desarrollo
 

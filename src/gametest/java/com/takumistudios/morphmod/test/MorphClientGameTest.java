@@ -88,7 +88,43 @@ public class MorphClientGameTest implements FabricClientGameTest {
 			world.getServer().runCommand("item replace entity @a armor.chest with minecraft:elytra");
 			world.getServer().runCommand("item replace entity @a weapon.mainhand with minecraft:diamond_sword");
 			context.waitTicks(5);
+			// Equipment is hidden on the morph until a permitted player turns it on from the inventory tab.
+			context.runOnClient(mc -> {
+				var proxy = com.takumistudios.morphmod.client.character.CharacterRenderManager.proxy(mc.player);
+				check(proxy.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).isEmpty(), "equipment hidden by default");
+			});
+			context.runOnClient(mc -> check(!Boolean.TRUE.equals(mc.player.getAttached(com.takumistudios.morphmod.data.MorphAttachments.CAN_TOGGLE_EQUIPMENT)), "tab hidden for non-operators"));
+			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().forEach(p -> server.getPlayerList().op(p.nameAndId())));
+			context.waitFor(mc -> Boolean.TRUE.equals(mc.player.getAttached(com.takumistudios.morphmod.data.MorphAttachments.CAN_TOGGLE_EQUIPMENT)), 220);
+			context.runOnClient(MorphClientGameTest::clearToasts);
+			context.setScreen(() -> new net.minecraft.client.gui.screens.inventory.InventoryScreen(net.minecraft.client.Minecraft.getInstance().player));
+			context.waitTicks(2);
+			context.takeScreenshot("morph-inventory-equipment-tab");
+			context.runOnClient(mc -> {
+				var tab = com.takumistudios.morphmod.client.screen.EquipmentToggleTab.current();
+				check(tab != null && tab.visible && tab.active, "equipment tab visible for operators");
+				tab.onPress(new net.minecraft.client.input.KeyEvent(257, 0, 0));
+			});
+			context.waitFor(mc -> com.takumistudios.morphmod.data.MorphAttachments.showsEquipment(mc.player), 100);
+			context.setScreen(() -> null);
+			world.getServer().runCommand("item replace entity @a armor.chest with minecraft:diamond_chestplate");
+			world.getServer().runCommand("item replace entity @a armor.legs with minecraft:diamond_leggings");
+			world.getServer().runCommand("item replace entity @a armor.feet with minecraft:diamond_boots");
+			context.waitTicks(5);
+			context.runOnClient(mc -> {
+				var proxy = com.takumistudios.morphmod.client.character.CharacterRenderManager.proxy(mc.player);
+				check(!proxy.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD).isEmpty(), "equipment shown after toggle");
+			});
+			int fov = context.computeOnClient(mc -> { int old = mc.options.fov().get(); mc.options.fov().set(50); mc.player.setXRot(0); hideHud(mc, true); return old; });
+			context.waitTicks(2);
+			context.takeScreenshot("morph-otter-armor-front");
+			context.runOnClient(mc -> mc.player.setYRot(mc.player.getYRot() + 90));
+			context.waitTicks(15);
+			context.takeScreenshot("morph-otter-armor-side");
+			world.getServer().runCommand("item replace entity @a armor.chest with minecraft:elytra");
+			context.waitTicks(5);
 			context.takeScreenshot("morph-otter-equipment");
+			context.runOnClient(mc -> { mc.options.fov().set(fov); mc.player.setXRot(0); hideHud(mc, false); });
 			context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			context.waitTicks(15);
 			context.takeScreenshot("morph-otter-first-person");
@@ -117,6 +153,11 @@ public class MorphClientGameTest implements FabricClientGameTest {
 			});
 			context.waitTicks(10);
 			context.takeScreenshot("morph-warden-third-person");
+			context.getInput().pressKey(options -> options.keyAttack);
+			context.waitTicks(2);
+			context.runOnClient(minecraft -> check(DisguiseManager.disguiseFor(minecraft.player) instanceof net.minecraft.world.entity.monster.warden.Warden warden
+				&& warden.attackAnimationState.isStarted(), "warden disguise plays its attack animation"));
+			context.takeScreenshot("morph-warden-attack");
 
 			// --- Ability: R sends the request and the server answers with a cooldown ----------
 			context.runOnClient(minecraft -> {
@@ -134,6 +175,15 @@ public class MorphClientGameTest implements FabricClientGameTest {
 			context.waitTicks(5);
 			context.runOnClient(minecraft ->
 				check(ClientMorphState.cooldownProgress(AbilitySlot.PRIMARY) > 0, "sonic boom cooldown started"));
+
+			// --- Iron golem: the attack raises both arms ------------------------------------
+			world.getServer().runCommand("morph into minecraft:iron_golem @a");
+			context.waitTicks(10);
+			context.getInput().pressKey(options -> options.keyAttack);
+			context.waitTicks(2);
+			context.runOnClient(minecraft -> check(DisguiseManager.disguiseFor(minecraft.player) instanceof net.minecraft.world.entity.animal.golem.IronGolem golem
+				&& golem.getAttackAnimationTick() > 0, "iron golem disguise raises its arms when attacking"));
+			context.takeScreenshot("morph-iron-golem-attack");
 
 			// --- Menu ---------------------------------------------------------------------------
 			world.getServer().runCommand("morph unlock all @a");
@@ -205,6 +255,20 @@ public class MorphClientGameTest implements FabricClientGameTest {
 		}
 	}
 
+	private static void hideHud(net.minecraft.client.Minecraft mc, boolean hide) {
+		//? if >=26.2 {
+		if (mc.gui.hud.isHidden() != hide) mc.gui.hud.toggle();
+		//?} else {
+		/*mc.options.hideGui = hide;
+		*///?}
+	}
+	private static void clearToasts(net.minecraft.client.Minecraft mc) {
+		//? if >=26.2 {
+		mc.gui.toastManager().clear();
+		//?} else {
+		/*mc.getToastManager().clear();
+		*///?}
+	}
 	private static void check(boolean condition, String what) {
 		if (!condition) {
 			throw new AssertionError("Failed: " + what);

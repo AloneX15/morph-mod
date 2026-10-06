@@ -2,6 +2,7 @@ package com.takumistudios.morphmod.client.render;
 
 import com.takumistudios.morphmod.MorphMod;
 import com.takumistudios.morphmod.client.mixin.WalkAnimationStateAccessor;
+import com.takumistudios.morphmod.compat.PlayerAnimationState;
 import com.takumistudios.morphmod.data.MorphAttachments;
 import com.takumistudios.morphmod.morph.MorphDefinition;
 import com.takumistudios.morphmod.morph.MorphManager;
@@ -16,10 +17,17 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.monster.Zoglin;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -29,6 +37,8 @@ import org.jspecify.annotations.Nullable;
 public final class DisguiseManager {
 	private static final Map<UUID, LivingEntity> DISGUISES = new HashMap<>();
 	private static final Map<UUID, Identifier> KNOWN_MORPHS = new HashMap<>();
+	/** Last observed swing of each player, so the disguise starts its attack animation once per swing. */
+	private static final Map<UUID, Object> LAST_SWINGS = new HashMap<>();
 	/** Mob types whose tick() threw on a detached client entity; they are rendered without ticking. */
 	private static final Set<EntityType<?>> NO_TICK = new HashSet<>();
 	private static final Set<EntityType<?>> NO_CREATE = new HashSet<>();
@@ -85,11 +95,13 @@ public final class DisguiseManager {
 		}
 		DISGUISES.keySet().retainAll(seen);
 		KNOWN_MORPHS.keySet().retainAll(seen);
+		LAST_SWINGS.keySet().retainAll(seen);
 	}
 
 	public static void clear() {
 		DISGUISES.clear();
 		KNOWN_MORPHS.clear();
+		LAST_SWINGS.clear();
 		NO_TICK.clear();
 		NO_CREATE.clear();
 		SEEN.clear();
@@ -121,6 +133,7 @@ public final class DisguiseManager {
 
 	private static void tickDisguise(AbstractClientPlayer player, LivingEntity disguise) {
 		copyState(player, disguise);
+		copyAttack(player, disguise);
 		if (NO_TICK.contains(disguise.getType())) {
 			disguise.tickCount = player.tickCount;
 			return;
@@ -133,6 +146,35 @@ public final class DisguiseManager {
 			MorphMod.LOGGER.warn("Disguise {} cannot be ticked, rendering without animations", disguise.getType(), e);
 		}
 		copyState(player, disguise);
+	}
+
+	/** Mirrors the start of each player swing: arm swing for humanoids, attack event for golems, wardens... */
+	private static void copyAttack(AbstractClientPlayer player, LivingEntity disguise) {
+		Object swing = PlayerAnimationState.swingToken(player);
+		Object previous = LAST_SWINGS.put(player.getUUID(), swing);
+		if (!PlayerAnimationState.swingStarted(previous, swing)) {
+			return;
+		}
+		try {
+			PlayerAnimationState.copySwing(player, disguise);
+			if (disguise instanceof IronGolem || disguise instanceof Warden || disguise instanceof Ravager
+				|| disguise instanceof Hoglin || disguise instanceof Zoglin) {
+				// Same entity event the server broadcasts when these mobs attack.
+				disguise.handleEntityEvent((byte) 4);
+			}
+		} catch (RuntimeException e) {
+			MorphMod.LOGGER.debug("Disguise {} cannot mirror the attack animation", disguise.getType(), e);
+		}
+	}
+
+	private static void copyEquipment(AbstractClientPlayer player, LivingEntity disguise) {
+		boolean show = MorphAttachments.showsEquipment(player);
+		for (EquipmentSlot slot : EquipmentSlot.values()) {
+			ItemStack stack = show ? player.getItemBySlot(slot) : ItemStack.EMPTY;
+			if (disguise.getItemBySlot(slot) != stack) {
+				disguise.setItemSlot(slot, stack);
+			}
+		}
 	}
 
 	private static void copyState(AbstractClientPlayer player, LivingEntity disguise) {
@@ -159,6 +201,7 @@ public final class DisguiseManager {
 		disguise.setInvisible(player.isInvisible());
 		disguise.setRemainingFireTicks(player.getRemainingFireTicks());
 		disguise.setCustomName(player == Minecraft.getInstance().player ? null : player.getDisplayName());
+		copyEquipment(player, disguise);
 
 		WalkAnimationStateAccessor from = (WalkAnimationStateAccessor) player.walkAnimation;
 		WalkAnimationStateAccessor to = (WalkAnimationStateAccessor) disguise.walkAnimation;

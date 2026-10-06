@@ -6,6 +6,7 @@
 		"CharacterPackMixin",
 		"CharacterDispatcherMixin",
 		"CharacterHandMixin",
+		"ContainerScreenAccessor",
 		"LevelExtractorMixin",
 		"MinecraftMixin",
 		"WalkAnimationStateAccessor"

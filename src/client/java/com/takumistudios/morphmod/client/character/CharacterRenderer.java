@@ -113,6 +113,9 @@ public final class CharacterRenderer extends GeoEntityRenderer<CharacterEntity, 
             }
             return result;
         }
+        /** Anchor of the piece being submitted; GeckoLib computes the fit synchronously inside submitRenderForBone. */
+        private CharacterDefinition.Anchor current;
+        private static final net.minecraft.util.RandomSource FIRST_CUBE = net.minecraft.util.RandomSource.create(0);
         @Override protected void submitRenderForBone(RenderPassInfo<State> pass, SubmitNodeCollector tasks, RenderData data, GeoBone bone) {
             pass.poseStack().pushPose();
             var anchors = pass.renderState().character.anchors();
@@ -121,8 +124,39 @@ public final class CharacterRenderer extends GeoEntityRenderer<CharacterEntity, 
                 case RIGHT_LEG -> "right_leg"; case LEFT_LEG -> "left_leg"; case RIGHT_FOOT -> "right_foot"; case LEFT_FOOT -> "left_foot";
             };
             boolean wing = key.equals("chest") && pass.renderState().getGeckolibData(com.geckolib.constant.DataTickets.EQUIPMENT_BY_SLOT).get(net.minecraft.world.entity.EquipmentSlot.CHEST).getItem() == net.minecraft.world.item.Items.ELYTRA;
-            transform(pass.poseStack(), anchors.get(wing ? "elytra" : key));
-            super.submitRenderForBone(pass, tasks, data, bone); pass.poseStack().popPose();
+            current = anchors.get(wing ? "elytra" : key);
+            // Only the offset is applied here, in model space: a scale before GeckoLib's bone transform would
+            // also scale the bone's position and pull the piece towards the model origin.
+            if (current != null) pass.poseStack().translate(current.position()[0] / 16, current.position()[1] / 16, current.position()[2] / 16);
+            try { super.submitRenderForBone(pass, tasks, data, bone); }
+            finally { current = null; pass.poseStack().popPose(); }
+        }
+        /** GeckoLib's automatic fit to the bone, made robust for odd rigs, times the anchor scale. */
+        @Override protected net.minecraft.world.phys.Vec3 getScaleFactorForBone(GeoBone bone, net.minecraft.client.model.geom.ModelPart part) {
+            net.minecraft.world.phys.Vec3 fit = fit(bone, part);
+            if (current == null) return fit;
+            return new net.minecraft.world.phys.Vec3(fit.x * current.scale()[0], fit.y * current.scale()[1], fit.z * current.scale()[2]);
+        }
+        /**
+         * Like GeckoLib's fit, but uses the largest cube instead of the first one (flat cubes such as feet soles
+         * would flatten the piece) and falls back to the parent bone for empty locator bones like armorBipedHead.
+         */
+        static net.minecraft.world.phys.Vec3 fit(GeoBone bone, net.minecraft.client.model.geom.ModelPart part) {
+            if (part.isEmpty()) return new net.minecraft.world.phys.Vec3(1, 1, 1);
+            var armor = part.getRandomCube(FIRST_CUBE); // Armor parts have a single cube; ModelPart.cubes is not public on every version.
+
+            double ax = Math.abs(armor.maxX - armor.minX), ay = Math.abs(armor.maxY - armor.minY), az = Math.abs(armor.maxZ - armor.minZ);
+            if (ax == 0 || ay == 0 || az == 0) return new net.minecraft.world.phys.Vec3(1, 1, 1);
+            for (GeoBone source = bone; source != null; source = source.parent()) {
+                if (!(source instanceof com.geckolib.cache.model.cuboid.CuboidGeoBone cuboid)) continue;
+                net.minecraft.world.phys.Vec3 best = null;
+                for (var cube : cuboid.cubes) {
+                    var size = cube.size();
+                    if (size.x > 0 && size.y > 0 && size.z > 0 && (best == null || size.x * size.y * size.z > best.x * best.y * best.z)) best = size;
+                }
+                if (best != null) return new net.minecraft.world.phys.Vec3(best.x / ax, best.y / ay, best.z / az);
+            }
+            return new net.minecraft.world.phys.Vec3(1, 1, 1);
         }
     }
 }

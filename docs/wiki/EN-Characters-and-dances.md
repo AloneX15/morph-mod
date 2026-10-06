@@ -21,6 +21,8 @@ The manifest must allow the chosen mode. For overlay-only emotes, specify `overl
 
 ## Try the template
 
+`demo_dance` is a sample emote added by Morph to the otter template; the otter's original animations are its walk/idle, swimming, sleeping and item poses.
+
 ~~~text
 /morph character select morphmod:otter
 /morph emote list

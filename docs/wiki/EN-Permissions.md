@@ -11,6 +11,7 @@ LuckPerms is optional. Without it, access follows `free` and unlocks; catalog ad
 | `morphmod.characters.admin` | Reload catalogs and grant character unlocks |
 | `morphmod.character.use.<namespace>.<path>` | Use a character |
 | `morphmod.emote.use.<namespace>.<path>.<emote>` | Use a character's emote |
+| `morphmod.equipment.toggle` | Show the inventory tab that shows or hides armor and held items on the own morph |
 
 In IDs, `:` and `/` become dots. `mis_personajes:grupo/explorador` becomes `morphmod.character.use.mis_personajes.grupo.explorador`.
 
@@ -21,6 +22,7 @@ In IDs, `:` and `/` become dots. `mis_personajes:grupo/explorador` becomes `morp
 - **Undefined** permission: characters follow `free` or unlocks; emotes follow their own `free`.
 - Emotes additionally require access to their character.
 - Undefined administration permission: OP 2 fallback.
+- Undefined equipment toggle permission: OP 2 fallback.
 
 An individual grant may override inherited denial according to LuckPerms resolution. Morph uses the effective result; it does not make every false node from every group win universally. Access loss is checked once per second; selection and playback check access immediately.
 

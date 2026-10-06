@@ -65,5 +65,7 @@
   "screen.morphmod.emotes": "Emotes",
   "screen.morphmod.stop": "Stop",
   "screen.morphmod.emote_mode.full": "Full body",
-  "commands.morphmod.characters.list": "Characters: %s"
+  "commands.morphmod.characters.list": "Characters: %s",
+  "screen.morphmod.equipment.shown": "Morph equipment: visible (armor and held items)",
+  "screen.morphmod.equipment.hidden": "Morph equipment: hidden (armor and held items)"
 }

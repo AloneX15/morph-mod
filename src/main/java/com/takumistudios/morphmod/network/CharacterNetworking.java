@@ -22,6 +22,7 @@ public final class CharacterNetworking {
     private static final Map<UUID, String> ACCESS = new HashMap<>();
     private static final RequestLimiter LIMIT = new RequestLimiter(8, 20);
     private static final FeatureGuard GUARD = new FeatureGuard("character networking");
+    private static final FeatureGuard EQUIPMENT = new FeatureGuard("equipment visibility");
     public static void init() {
         PayloadTypeRegistry.clientboundConfiguration().register(CharacterPayload.TYPE, CharacterPayload.CODEC);
         PayloadTypeRegistry.serverboundConfiguration().register(CharacterPayload.TYPE, CharacterPayload.CODEC);
@@ -34,6 +35,7 @@ public final class CharacterNetworking {
         });
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> { CONFIG.clear(); PLAY.clear(); TRANSFERS.clear(); ACCESS.clear(); });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getTickCount() % 100 == 0) EQUIPMENT.run(() -> server.getPlayerList().getPlayers().forEach(com.takumistudios.morphmod.morph.EquipmentVisibility::refresh));
             var iterator = TRANSFERS.entrySet().iterator();
             while (iterator.hasNext()) {
                 var entry = iterator.next(); ServerPlayer player = server.getPlayerList().getPlayer(entry.getKey());
@@ -51,7 +53,7 @@ public final class CharacterNetworking {
             if (task != null) task.receive(payload);
         });
         ServerConfigurationConnectionEvents.DISCONNECT.register((handler, server) -> CONFIG.remove(handler));
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> sendAccess(handler.player));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> { sendAccess(handler.player); EQUIPMENT.run(() -> com.takumistudios.morphmod.morph.EquipmentVisibility.refresh(handler.player)); });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             UUID id = handler.player.getUUID(); PLAY.remove(id); TRANSFERS.remove(id); ACCESS.remove(id); LIMIT.forget(id);
         });
@@ -71,6 +73,7 @@ public final class CharacterNetworking {
                 case "clear" -> MorphManager.demorph(player);
                 case "play" -> CharacterManager.play(player, payload.id(), payload.mode());
                 case "stop" -> CharacterManager.stop(player);
+                case "equipment" -> com.takumistudios.morphmod.morph.EquipmentVisibility.toggle(player);
                 default -> MorphMod.LOGGER.debug("Ignored invalid character action {}", payload.action());
             }
         }));

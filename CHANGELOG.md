@@ -5,6 +5,12 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 
 ## [Unreleased]
 
+- Documentación: `demo_dance` se presenta como emote de ejemplo añadido por el mod; la animación propia de la nutria es su caminar/idle.
+- Los morphs de mobs reproducen el golpe del jugador: el Golem de hierro levanta los brazos, el Warden, Ravager, Hoglin y Zoglin usan su animación de ataque y los humanoides balancean el brazo.
+- La explosión del Creeper rompe bloques como el mob real, respetando `mobGriefing` (nueva opción `creeperBreaksBlocks`, configuración versión 2).
+- Armadura de personajes GeckoLib ajustada al tamaño real de cada hueso; los anclajes de armadura usan `scale` como multiplicador y `position` como desplazamiento. Nutria corregida.
+- Pestaña en el inventario, solo con el permiso `morphmod.equipment.toggle` (OP 2 por defecto), para mostrar u ocultar la armadura y los objetos en mano del propio morph. Oculto por defecto; también se aplica a los morphs de mobs.
+
 ## 0.3.0 - 2026-10-03
 
 - Personajes GeckoLib independientes, con estadísticas humanas o vínculo opcional a un mob.
@@ -12,7 +18,7 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 - Menús de personajes y emotes, comandos y permisos opcionales con LuckPerms.
 - Animaciones de movimiento, manos y combate con perfiles de nombres de Forge/Fabric.
 - Bailes completos y superpuestos mediante máscaras de huesos.
-- Plantilla de nutria con textura, animaciones y `demo_dance`, adaptada sin modificar los originales.
+- Plantilla de nutria con textura y sus animaciones (caminar/idle, nadar, dormir, poses con objetos), más `demo_dance` como emote de ejemplo, adaptada sin modificar los originales.
 - Render de equipo, armadura y élitros mediante anclajes; brazos personalizados en primera persona.
 - Protocolo 2 y pruebas de recursos, permisos, cliente y sincronización multijugador.
 - Wiki completa en español e inglés, con 28 temas, imágenes, recursos de ejemplo y validación en CI.

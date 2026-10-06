@@ -11,6 +11,7 @@ LuckPerms es opcional. Sin él, se aplican `free` y desbloqueos; administración
 | `morphmod.characters.admin` | Recargar catálogo y desbloquear personajes |
 | `morphmod.character.use.<namespace>.<path>` | Usar el personaje |
 | `morphmod.emote.use.<namespace>.<path>.<emote>` | Usar un emote del personaje |
+| `morphmod.equipment.toggle` | Ver la pestaña del inventario que muestra u oculta armadura y objetos en mano en el propio morph |
 
 En IDs, `:` y `/` se convierten en puntos. `mis_personajes:grupo/explorador` corresponde a `morphmod.character.use.mis_personajes.grupo.explorador`.
 
@@ -21,6 +22,7 @@ En IDs, `:` y `/` se convierten en puntos. `mis_personajes:grupo/explorador` cor
 - Permiso **indefinido**: personaje según `free` o desbloqueo; emote según su propio `free`.
 - Un emote requiere además acceso al personaje.
 - Administración indefinida: OP 2 como fallback.
+- Pestaña de equipo indefinida: OP 2 como fallback.
 
 Una concesión individual puede superar una denegación heredada según la resolución de LuckPerms. Morph utiliza el resultado efectivo; no impone que cualquier nodo false de cualquier grupo gane siempre. La pérdida de acceso se revisa cada segundo; seleccionar o reproducir comprueba acceso inmediatamente.
 

@@ -17,7 +17,7 @@ An administrator can grant a form with `/morph unlock minecraft:bat Name`. If th
 
 Open **J → Characters**, select **Otter**, and transform. This template is free by default and retains human statistics and collision. Killing an otter is not required: characters have a separate access system.
 
-Under **Emotes**, choose `demo_dance`. Use `full` for a complete dance or `overlay` to dance while walking. Stop through the menu or with:
+Under **Emotes**, choose `demo_dance`, a sample emote added by Morph (it is not part of the otter's own animations, which are its walk/idle, swimming, sleeping and item poses). Use `full` to play it on the whole body or `overlay` to play it while walking. Stop through the menu or with:
 
 ~~~text
 /morph emote stop

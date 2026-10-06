@@ -14,7 +14,7 @@ Morph **0.3.0** · [Índice](ES-Index.md) · [English](EN-Equipment.md)
 | `right_foot`, `left_foot` | Botas |
 | `elytra` | Élitros |
 
-Un anclaje contiene un nombre de hueso y transformaciones locales. Posición utiliza unidades del modelo: 16 unidades equivalen a un bloque. Rotación utiliza grados. Escala es un multiplicador.
+Un anclaje contiene un nombre de hueso y ajustes. Las piezas de armadura se ajustan automáticamente al cubo más grande del hueso (o del padre más cercano con cubos, para huesos localizadores vacíos como `armorBipedHead`). En los anclajes de armadura, `scale` multiplica ese ajuste automático (1 = ajustada al hueso) y `position` desplaza la pieza en unidades del modelo (16 unidades equivalen a un bloque); `rotation` no se usa en la armadura. En los objetos en mano (`right_hand`, `left_hand`) posición, rotación (grados) y escala son transformaciones locales del objeto.
 
 ## Ejemplo con el rig Otter
 
@@ -24,19 +24,29 @@ Un anclaje contiene un nombre de hueso y transformaciones locales. Posición uti
     "right_hand": {"bone": "right_hand_item"},
     "left_hand": {"bone": "left_hand_item"},
     "head": {"bone": "armorBipedHead"},
-    "right_arm": {"bone": "right_arm", "scale": [0.6, 0.6, 0.6]},
-    "left_arm": {"bone": "left_arm", "scale": [0.6, 0.6, 0.6]},
-    "chest": {"bone": "body_upper", "scale": [0.6, 0.6, 0.6]},
-    "elytra": {"bone": "body_upper", "scale": [0.6, 0.6, 0.6]}
+    "chest": {"bone": "body_upper", "position": [0, 3.6, 0]},
+    "right_arm": {"bone": "right_arm", "position": [0.5, 0.4, 0], "scale": [1.3, 1.0, 1.3]},
+    "left_arm": {"bone": "left_arm", "position": [-0.5, 0.4, 0], "scale": [1.3, 1.0, 1.3]},
+    "right_leg": {"bone": "right_leg", "position": [0, 0.7, 0]},
+    "left_leg": {"bone": "left_leg", "position": [0, 0.7, 0]},
+    "right_foot": {"bone": "right_leg", "position": [0, 0.7, 0]},
+    "left_foot": {"bone": "left_leg", "position": [0, 0.7, 0]},
+    "elytra": {"bone": "body_upper", "position": [0, 3.6, 0]}
   }
 }
 ~~~
 
+Los desplazamientos compensan pivotes que no están donde los de un jugador: `body_upper` tiene el pivote cerca de la base de su cubo, por eso la pechera sube 3,6 unidades. GeckoLib refleja el eje X, así que un desplazamiento X positivo aleja del cuerpo la pieza del brazo derecho.
+
 Incorpora este fragmento a un manifiesto que use esos huesos. En tu propio rig, cambia nombres y offsets. Un anclaje inexistente se omite; no invalida por sí solo el personaje y el equipo mantiene sus efectos de juego.
+
+## Mostrar el equipo en el morph
+
+Por defecto la armadura y los objetos en mano están **ocultos** en todos los morphs (mobs y personajes); sus efectos de juego no cambian. Los jugadores con el permiso `morphmod.equipment.toggle` (OP nivel 2 sin LuckPerms) ven una pestaña con una pechera a la derecha del inventario. Alterna su propio morph entre mostrar y ocultar armadura y objetos en mano, y todos los jugadores ven el resultado. El ajuste se conserva al morir y al reconectar; se elimina si el jugador pierde el permiso.
 
 ## Ajustar en el juego
 
-1. Carga el modelo sin equipo y verifica su escala visual.
+1. Activa la pestaña de equipo, carga el modelo sin equipo y verifica su escala visual.
 2. Sujeta una espada y un objeto en la otra mano; comprueba ambos anclajes.
 3. Usa arco, escudo y consumibles para revisar poses y mano activa.
 4. Equipa casco, pechera, pantalones, botas y élitros.

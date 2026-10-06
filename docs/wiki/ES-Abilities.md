@@ -37,7 +37,7 @@ Araña y murciélago tienen pasivas, sin poderes activos propios. Un lanzamiento
 
 El Warden resalta entidades cercanas que se mueven, excepto las agachadas, dentro de su alcance de vibraciones de 24 bloques. No convierte a otros mobs en aliados. El vuelo depende de `allowFlight`.
 
-La destrucción por explosiones depende de `abilitiesBreakBlocks` y, para la explosión del Creeper, de `mobGriefing`. Mantén el valor predeterminado si no quieres que las habilidades alteren bloques.
+La destrucción por explosiones depende de `abilitiesBreakBlocks`. La explosión del Creeper rompe bloques como el mob real (`creeperBreaksBlocks`, activado por defecto) siempre que la regla `mobGriefing` lo permita; pon `creeperBreaksBlocks: false` para conservar los bloques.
 
 ---
 

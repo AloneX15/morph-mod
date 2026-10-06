@@ -22,7 +22,7 @@ Valores base del jugador: 20 de vida, 1 de daño, velocidad 0.1 y altura de paso
 
 ### Creeper
 - Vida 20, hitbox 0.6 × 1.7.
-- **R · Explotar** (10 s): explosión de potencia 3 centrada en ti que **no te daña ni te empuja**. Rompe bloques si `abilitiesBreakBlocks` y `mobGriefing` lo permiten.
+- **R · Explotar** (10 s): explosión de potencia 3 centrada en ti que **no te daña ni te empuja**. Rompe bloques como el creeper real si `mobGriefing` está activo (desactivable con `creeperBreaksBlocks: false`).
 - **Pasivas:** sin daño por caída.
 
 ### Enderman

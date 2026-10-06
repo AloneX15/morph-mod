@@ -33,7 +33,7 @@ Inspect the model in third person, walk with overlay and check the first-person 
 4. Reload and select `mis_personajes:explorador`.
 5. Open the copy in Blockbench and modify its texture or geometry while keeping channels and anchors consistent.
 
-The downloadable manifest retains `demo_dance`. To link mechanics, add `"mob": "minecraft:bat"`: this gives bat mechanics to the otter appearance. It does not turn the model into a bat.
+The downloadable manifest retains `demo_dance`, a sample emote added by Morph to show both emote modes; the otter's own animation file provides its walk (inside `idle`), swimming, sleeping and item poses, not a dance. To link mechanics, add `"mob": "minecraft:bat"`: this gives bat mechanics to the otter appearance. It does not turn the model into a bat.
 
 ## Adaptations
 

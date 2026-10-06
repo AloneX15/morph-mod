@@ -51,6 +51,15 @@ class MorphConfigTest {
 		assertEquals(1.0, config.damageMultiplier);
 		assertEquals(1.0, config.cooldownMultiplier);
 	}
+	@Test void schemaOneGainsCreeperOptionAndIsRewritten() throws IOException {
+		Path file = dir.resolve("morphmod.json");
+		Files.writeString(file, "{\"schemaVersion\":1,\"abilitiesBreakBlocks\":false}");
+		MorphConfig config = MorphConfig.load(file);
+		assertTrue(config.creeperBreaksBlocks);
+		assertFalse(config.abilitiesBreakBlocks);
+		assertTrue(Files.readString(file).contains("\"creeperBreaksBlocks\": true"));
+		assertEquals(MorphConfig.CURRENT_VERSION, MorphConfig.load(file).schemaVersion);
+	}
 	@Test void futureSchemaIsNotOverwritten() throws IOException {
 		Path file = dir.resolve("morphmod.json");
 		String original = "{\"schemaVersion\":99,\"maxHealthCap\":30}";

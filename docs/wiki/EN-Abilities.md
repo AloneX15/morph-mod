@@ -37,7 +37,7 @@ Spider and bat have passives but no dedicated active powers. An unsuccessful act
 
 The Warden highlights nearby moving entities, excluding crouching entities, within its 24-block vibration range. It does not make other mobs friendly. Flight depends on `allowFlight`.
 
-Explosion block destruction depends on `abilitiesBreakBlocks` and, for the Creeper explosion, `mobGriefing`. Keep the default setting if you do not want abilities to change blocks.
+Explosion block destruction depends on `abilitiesBreakBlocks`. The Creeper explosion breaks blocks like the real mob (`creeperBreaksBlocks`, on by default) as long as the `mobGriefing` gamerule allows it; set `creeperBreaksBlocks: false` to keep blocks intact.
 
 ---
 

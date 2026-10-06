@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "morphmod:raccoon",
+  "name": "Raccoon",
+  "free": true,
+  "scale": 1,
+  "model": "raccoon.geo.json",
+  "texture": "raccoon.png",
+  "animations": "raccoon.animation.json",
+  "profile": "fabric-1.21.1",
+  "bindings": {
+    "idle": "idle",
+    "walk": "walk",
+    "run": "run",
+    "sneak": "sneak",
+    "sneak_walk": "sneak_walk",
+    "swing.main_hand": "swing.main_hand",
+    "swing.off_hand": "swing.off_hand"
+  },
+  "anchors": {
+    "right_hand": {
+      "bone": "right_arm",
+      "position": [
+        0,
+        -4,
+        -1
+      ]
+    },
+    "left_hand": {
+      "bone": "left_arm",
+      "position": [
+        0,
+        -4,
+        -1
+      ]
+    },
+    "head": {
+      "bone": "head"
+    },
+    "chest": {
+      "bone": "body_upper"
+    },
+    "right_arm": {
+      "bone": "right_arm"
+    },
+    "left_arm": {
+      "bone": "left_arm"
+    },
+    "right_leg": {
+      "bone": "right_leg"
+    },
+    "left_leg": {
+      "bone": "left_leg"
+    },
+    "right_foot": {
+      "bone": "right_leg"
+    },
+    "left_foot": {
+      "bone": "left_leg"
+    },
+    "elytra": {
+      "bone": "body_upper"
+    }
+  },
+  "emotes": {
+    "wag": {
+      "animation": "emote.wag",
+      "loop": true,
+      "seconds": 3,
+      "modes": [
+        "full",
+        "overlay"
+      ],
+      "bones": [
+        "tail",
+        "body_upper",
+        "head",
+        "left_ear",
+        "right_ear"
+      ],
+      "free": true
+    }
+  }
+}

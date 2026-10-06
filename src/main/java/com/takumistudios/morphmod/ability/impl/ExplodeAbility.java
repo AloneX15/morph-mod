@@ -41,7 +41,7 @@ public final class ExplodeAbility implements MorphAbility {
 				return entity == player ? 0.0F : super.getKnockbackMultiplier(entity);
 			}
 		};
-		Level.ExplosionInteraction interaction = MorphMod.config().abilitiesBreakBlocks
+		Level.ExplosionInteraction interaction = MorphMod.config().abilitiesBreakBlocks || MorphMod.config().creeperBreaksBlocks
 			? Level.ExplosionInteraction.MOB
 			: Level.ExplosionInteraction.NONE;
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CREEPER_PRIMED, SoundSource.PLAYERS, 1.0F, 0.5F);

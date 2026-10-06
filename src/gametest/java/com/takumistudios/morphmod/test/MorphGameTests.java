@@ -169,4 +169,47 @@ public class MorphGameTests {
 		} finally { MorphManager.forget(player); }
 		helper.succeed();
 	}
+	@GameTest public void creeperExplosionBreaksBlocksUnlessMobGriefingIsOff(GameTestHelper helper) {
+		ServerPlayer player = TestPlayers.create(helper);
+		var level = helper.getLevel();
+		var rules = level.getGameRules();
+		boolean griefing = rules.get(net.minecraft.world.level.gamerules.GameRules.MOB_GRIEFING);
+		BlockPos center = helper.absolutePos(new BlockPos(2, 2, 2));
+		player.teleportTo(center.getX() + 0.5, center.getY(), center.getZ() + 0.5);
+		BlockPos wall = center.east();
+		try {
+			rules.set(net.minecraft.world.level.gamerules.GameRules.MOB_GRIEFING, false, level.getServer());
+			level.setBlockAndUpdate(wall, Blocks.DIRT.defaultBlockState());
+			helper.assertTrue(new com.takumistudios.morphmod.ability.impl.ExplodeAbility().activate(player), "explosion fires");
+			helper.assertTrue(level.getBlockState(wall).is(Blocks.DIRT), "mobGriefing=false keeps blocks");
+			rules.set(net.minecraft.world.level.gamerules.GameRules.MOB_GRIEFING, true, level.getServer());
+			helper.assertTrue(new com.takumistudios.morphmod.ability.impl.ExplodeAbility().activate(player), "explosion fires again");
+			helper.assertTrue(level.getBlockState(wall).isAir(), "creeper explosion breaks nearby blocks");
+		} finally {
+			rules.set(net.minecraft.world.level.gamerules.GameRules.MOB_GRIEFING, griefing, level.getServer());
+			level.setBlockAndUpdate(wall, Blocks.AIR.defaultBlockState());
+		}
+		helper.succeed();
+	}
+	@GameTest public void equipmentToggleRequiresPermission(GameTestHelper helper) {
+		ServerPlayer player = TestPlayers.create(helper);
+		var server = helper.getLevel().getServer();
+		try {
+			server.getPlayerList().deop(player.nameAndId());
+			helper.assertTrue(!com.takumistudios.morphmod.morph.EquipmentVisibility.toggle(player), "toggle denied without permission");
+			helper.assertTrue(!MorphAttachments.showsEquipment(player), "equipment stays hidden by default");
+			helper.assertTrue(Boolean.FALSE.equals(player.getAttached(MorphAttachments.CAN_TOGGLE_EQUIPMENT)), "client told the tab is unavailable");
+			// The game test server gives operators level 0 by default; grant the usual gamemaster level.
+			server.getPlayerList().op(player.nameAndId(), java.util.Optional.of(net.minecraft.server.permissions.LevelBasedPermissionSet.GAMEMASTER), java.util.Optional.empty());
+			helper.assertTrue(com.takumistudios.morphmod.morph.EquipmentVisibility.toggle(player), "operators may toggle");
+			helper.assertTrue(MorphAttachments.showsEquipment(player), "equipment shown after toggle");
+			server.getPlayerList().deop(player.nameAndId());
+			com.takumistudios.morphmod.morph.EquipmentVisibility.refresh(player);
+			helper.assertTrue(!MorphAttachments.showsEquipment(player), "losing permission hides equipment again");
+		} finally {
+			server.getPlayerList().deop(player.nameAndId());
+			player.removeAttached(MorphAttachments.SHOW_EQUIPMENT);
+		}
+		helper.succeed();
+	}
 }

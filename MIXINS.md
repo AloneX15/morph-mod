@@ -10,6 +10,7 @@ una API equivalente para sustituir el modelo de un jugador y mantener sus colisi
 | LevelExtractorMixin | `LevelExtractor.extractVisibleEntities` (26.2+) / `LevelRenderer.extractVisibleEntities` (26.1.x) | Sustituye únicamente el estado de render de jugadores transformados mediante WrapOperation. | Mods que sustituyen completamente la extracción de entidades. |
 | MinecraftMixin | `Minecraft.shouldEntityAppearGlowing` | Vibraciones para el observador transformado en Warden. | Mods que reemplazan contornos. |
 | WalkAnimationStateAccessor | Campos `speedOld`, `speed`, `position` de `WalkAnimationState` | Copia animaciones al modelo separado. | Cambios de campos de Minecraft o de animaciones. |
+| ContainerScreenAccessor | Campos `leftPos`, `topPos`, `imageWidth` de `AbstractContainerScreen` | Coloca la pestaña de equipo junto al panel del inventario aunque el libro de recetas lo desplace. | Cambios de campos de Minecraft o mods que redibujan el inventario. |
 | CharacterPackMixin | `PackRepository.discoverAvailable` | Añade el paquete de recursos del catálogo recibido. | Mods que sustituyen el repositorio de paquetes. |
 | CharacterDispatcherMixin | `InventoryScreen.extractEntityInInventoryFollowsMouse` | Sustituye el personaje del inventario, conservando el estado vanilla de la cámara. | Mods que reemplazan el preview de inventario. |
 | CharacterHandMixin | `AvatarRenderer.renderRightHand/renderLeftHand` | Dibuja brazos GeckoLib en primera persona; objetos mantienen el pase vanilla. | Mods de manos y animaciones de primera persona. |

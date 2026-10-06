@@ -8,14 +8,15 @@ Morph **0.3.0** · [Índice](ES-Index.md) · [English](EN-Configuration.md)
 
 ~~~json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "requireUnlock": true,
   "unlockOnKill": true,
   "maxHealthCap": 500.0,
   "damageMultiplier": 1.0,
   "cooldownMultiplier": 1.0,
   "allowFlight": true,
-  "abilitiesBreakBlocks": false
+  "abilitiesBreakBlocks": false,
+  "creeperBreaksBlocks": true
 }
 ~~~
 
@@ -23,7 +24,7 @@ Morph **0.3.0** · [Índice](ES-Index.md) · [English](EN-Configuration.md)
 
 | Campo | Predeterminado | Rango / efecto |
 |---|---|---|
-| `schemaVersion` | 1 | Versión del formato; conserva 1 |
+| `schemaVersion` | 2 | Versión del formato; conserva 2 (los archivos de la versión 1 se actualizan solos) |
 | `requireUnlock` | true | Exige desbloqueos para seleccionar mobs |
 | `unlockOnKill` | true | Desbloquea el tipo de mob al matarlo |
 | `maxHealthCap` | 500 | Número finito, 1–1024; limita vida máxima de morphs |
@@ -31,6 +32,7 @@ Morph **0.3.0** · [Índice](ES-Index.md) · [English](EN-Configuration.md)
 | `cooldownMultiplier` | 1 | Número finito, 0–100; escala cooldowns |
 | `allowFlight` | true | Permite vuelo de formas con esa pasiva |
 | `abilitiesBreakBlocks` | false | Permite destrucción por habilidades que respetan esta opción |
+| `creeperBreaksBlocks` | true | La explosión del Creeper rompe bloques como el mob real, sujeta a la regla `mobGriefing` |
 
 `requireUnlock` no concede personajes: para ellos usa `free`, desbloqueos y permisos. Desactivar `unlockOnKill` no borra las formas existentes.
 

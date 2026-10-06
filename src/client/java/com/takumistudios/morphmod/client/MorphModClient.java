@@ -18,6 +18,7 @@ public class MorphModClient implements ClientModInitializer {
 		MorphKeybinds.init();
 		com.takumistudios.morphmod.client.character.CharacterRenderManager.init();
 		com.takumistudios.morphmod.client.character.ClientCharacters.init();
+		com.takumistudios.morphmod.client.screen.EquipmentToggleTab.init();
 		FeatureGuard protocol = new FeatureGuard("client protocol");
 		FeatureGuard cooldown = new FeatureGuard("client cooldown packet");
 		FeatureGuard keys = new FeatureGuard("key handling");
