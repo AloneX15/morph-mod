@@ -41,7 +41,7 @@ Place Otter's three resource files beside this manifest. It creates another char
 
 ## Anchors
 
-Each `anchors` entry contains `bone` and optionally `position`, `rotation` and `scale`. These are three-number finite vectors with maximum absolute value 128. Defaults: position and rotation [0,0,0], scale [1,1,1]. An unknown bone causes that anchor to be omitted.
+Each `anchors` entry contains `bone` and optionally `position`, `rotation` and `scale`. These are three-number finite vectors; position and scale have a maximum absolute value of 128, rotation (degrees) of 360. Defaults: position and rotation [0,0,0], scale [1,1,1]. An unknown bone causes that anchor to be omitted.
 
 ## Emotes
 

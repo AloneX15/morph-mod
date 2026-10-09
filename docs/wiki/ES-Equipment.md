@@ -14,19 +14,19 @@ Morph **0.3.0** · [Índice](ES-Index.md) · [English](EN-Equipment.md)
 | `right_foot`, `left_foot` | Botas |
 | `elytra` | Élitros |
 
-Un anclaje contiene un nombre de hueso y ajustes. Las piezas de armadura se ajustan automáticamente al cubo más grande del hueso (o del padre más cercano con cubos, para huesos localizadores vacíos como `armorBipedHead`). En los anclajes de armadura, `scale` multiplica ese ajuste automático (1 = ajustada al hueso) y `position` desplaza la pieza en unidades del modelo (16 unidades equivalen a un bloque); `rotation` no se usa en la armadura. En los objetos en mano (`right_hand`, `left_hand`) posición, rotación (grados) y escala son transformaciones locales del objeto.
+Un anclaje contiene un nombre de hueso y ajustes. Las piezas de armadura se ajustan automáticamente al cubo más grande del hueso (o del padre más cercano con cubos, para huesos localizadores vacíos como `armorBipedHead`). En los anclajes de armadura, `scale` multiplica ese ajuste automático (1 = ajustada al hueso) y `position` desplaza la pieza en unidades del modelo (16 unidades equivalen a un bloque); `rotation` no se usa en la armadura. En los objetos en mano (`right_hand`, `left_hand`) posición, rotación (grados) y escala son transformaciones locales del objeto. Los objetos en mano se escalan primero al tamaño del rig: un modelo con la mitad de altura que un jugador (32 unidades) sostiene objetos a la mitad de tamaño, entre 0,25 y 2; el `scale` del anclaje multiplica ese valor.
 
 ## Ejemplo con el rig Otter
 
 ~~~json
 {
   "anchors": {
-    "right_hand": {"bone": "right_hand_item"},
-    "left_hand": {"bone": "left_hand_item"},
+    "right_hand": {"bone": "right_hand_item", "rotation": [120, 0, 0]},
+    "left_hand": {"bone": "left_hand_item", "rotation": [120, 0, 0]},
     "head": {"bone": "armorBipedHead"},
-    "chest": {"bone": "body_upper", "position": [0, 3.6, 0]},
-    "right_arm": {"bone": "right_arm", "position": [0.5, 0.4, 0], "scale": [1.3, 1.0, 1.3]},
-    "left_arm": {"bone": "left_arm", "position": [-0.5, 0.4, 0], "scale": [1.3, 1.0, 1.3]},
+    "chest": {"bone": "body_upper", "position": [0, 2.6, 0], "scale": [1.15, 1.6, 1.5]},
+    "right_arm": {"bone": "right_arm", "position": [0.2, -0.4, 0], "scale": [1.3, 1, 1.3]},
+    "left_arm": {"bone": "left_arm", "position": [-0.2, -0.4, 0], "scale": [1.3, 1, 1.3]},
     "right_leg": {"bone": "right_leg", "position": [0, 0.7, 0]},
     "left_leg": {"bone": "left_leg", "position": [0, 0.7, 0]},
     "right_foot": {"bone": "right_leg", "position": [0, 0.7, 0]},
@@ -36,7 +36,7 @@ Un anclaje contiene un nombre de hueso y ajustes. Las piezas de armadura se ajus
 }
 ~~~
 
-Los desplazamientos compensan pivotes que no están donde los de un jugador: `body_upper` tiene el pivote cerca de la base de su cubo, por eso la pechera sube 3,6 unidades. GeckoLib refleja el eje X, así que un desplazamiento X positivo aleja del cuerpo la pieza del brazo derecho.
+Los desplazamientos compensan pivotes que no están donde los de un jugador: `body_upper` tiene el pivote cerca de la base de su cubo, por eso la pechera sube 2,6 unidades y se estira (`scale`) para cubrir también la barriga (`body_lower`). Los huesos `right_hand_item`/`left_hand_item` vienen inclinados 60° en el rig; la rotación de 120° deja la hoja apuntando hacia arriba y al frente desde la pata. GeckoLib refleja el eje X, así que un desplazamiento X positivo aleja del cuerpo la pieza del brazo derecho.
 
 Incorpora este fragmento a un manifiesto que use esos huesos. En tu propio rig, cambia nombres y offsets. Un anclaje inexistente se omite; no invalida por sí solo el personaje y el equipo mantiene sus efectos de juego.
 

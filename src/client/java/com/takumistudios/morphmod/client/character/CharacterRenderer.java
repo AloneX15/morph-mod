@@ -82,14 +82,43 @@ public final class CharacterRenderer extends GeoEntityRenderer<CharacterEntity, 
             if (!state.arm.isEmpty()) return List.of(); // Vanilla held-item pass remains in first person.
             List<RenderData> result = new ArrayList<>(2);
             var right = state.character.anchors().get("right_hand"); var left = state.character.anchors().get("left_hand");
-            if (right != null) result.add(renderDataForHand(right.bone(), net.minecraft.world.entity.HumanoidArm.RIGHT, entity, state));
-            if (left != null) result.add(renderDataForHand(left.bone(), net.minecraft.world.entity.HumanoidArm.LEFT, entity, state));
+            if (right != null) result.add(hand(right.bone(), net.minecraft.world.entity.HumanoidArm.RIGHT, entity, state));
+            if (left != null) result.add(hand(left.bone(), net.minecraft.world.entity.HumanoidArm.LEFT, entity, state));
             return result;
+        }
+        /** Like GeckoLib's renderDataForHand, but item models read use progress (bow pull, crossbow charge) from the owner: the proxy never uses items. */
+        private RenderData hand(String bone, net.minecraft.world.entity.HumanoidArm arm, CharacterEntity entity, State state) {
+            if (entity.owner == null) return renderDataForHand(bone, arm, entity, state);
+            boolean main = arm == entity.getMainArm();
+            var slot = main ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND;
+            var context = arm == net.minecraft.world.entity.HumanoidArm.RIGHT ? ItemDisplayContext.THIRD_PERSON_RIGHT_HAND : ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+            var stack = entity.getItemBySlot(slot);
+            if (stack.getItem() instanceof net.minecraft.world.item.ShieldItem) state.addGeckolibData(main ? MAINHAND_SHIELD : OFFHAND_SHIELD, true);
+            return RenderData.item(bone, context, com.geckolib.util.RenderUtil.createRenderStateForItem(stack, itemModelResolver, context, entity.owner));
         }
         @Override protected void submitItemStackRender(PoseStack pose, GeoBone bone, ItemStackRenderState item, ItemDisplayContext context, State state, SubmitNodeCollector tasks, int light) {
             pose.pushPose();
             transform(pose, state.character.anchors().get(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? "right_hand" : "left_hand"));
+            float scale = itemScale(bone); pose.scale(scale, scale, scale);
             super.submitItemStackRender(pose, bone, item, context, state, tasks, light); pose.popPose();
+        }
+        /** Item scale per baked model, keyed by root bone identity (GeoBone.hashCode walks the whole rig); reloads bake new bones, hence the cap. */
+        private final Map<GeoBone, Float> scales = new IdentityHashMap<>();
+        /** Held items keep the proportion they have on a player (32 units tall): a half-size rig holds half-size items. */
+        private float itemScale(GeoBone bone) {
+            GeoBone root = bone; while (root.parent() != null) root = root.parent();
+            if (scales.size() > 64 && !scales.containsKey(root)) scales.clear();
+            return scales.computeIfAbsent(root, r -> {
+                float[] bounds = {Float.MAX_VALUE, -Float.MAX_VALUE};
+                bounds(r, bounds);
+                return bounds[0] > bounds[1] ? 1F : net.minecraft.util.Mth.clamp((bounds[1] - bounds[0]) / 2F, 0.25F, 2F);
+            });
+        }
+        private static void bounds(GeoBone bone, float[] bounds) {
+            if (bone instanceof com.geckolib.cache.model.cuboid.CuboidGeoBone cuboid) for (var cube : cuboid.cubes) for (var quad : cube.quads()) {
+                if (quad != null) for (var vertex : quad.vertices()) { bounds[0] = Math.min(bounds[0], vertex.posY()); bounds[1] = Math.max(bounds[1], vertex.posY()); }
+            }
+            for (GeoBone child : bone.children()) bounds(child, bounds);
         }
     }
     private static final class Armor extends ItemArmorGeoLayer<CharacterEntity, Void, State> {

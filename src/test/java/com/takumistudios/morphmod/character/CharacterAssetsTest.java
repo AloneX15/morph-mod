@@ -52,6 +52,15 @@ class CharacterAssetsTest {
         var invalid = files(); edit(invalid, "character.json", j -> j.addProperty("scale", "NaN"));
         assertThrows(IllegalArgumentException.class, () -> CharacterBundle.create(invalid));
     }
+    @Test void anchorRotationsAcceptFullTurnsButPositionsStayBounded() throws Exception {
+        assertEquals(120, CharacterBundle.create(files()).definition().anchors().get("right_hand").rotation()[0]);
+        var turn = files(); edit(turn, "character.json", j -> j.getAsJsonObject("anchors").getAsJsonObject("right_hand").add("rotation", JsonParser.parseString("[-360, 200, 0]")));
+        assertEquals(200, CharacterBundle.create(turn).definition().anchors().get("right_hand").rotation()[1]);
+        var rotation = files(); edit(rotation, "character.json", j -> j.getAsJsonObject("anchors").getAsJsonObject("right_hand").add("rotation", JsonParser.parseString("[361, 0, 0]")));
+        assertThrows(IllegalArgumentException.class, () -> CharacterBundle.create(rotation));
+        var position = files(); edit(position, "character.json", j -> j.getAsJsonObject("anchors").getAsJsonObject("chest").add("position", JsonParser.parseString("[0, 200, 0]")));
+        assertThrows(IllegalArgumentException.class, () -> CharacterBundle.create(position));
+    }
     @Test void overlayRequiresExplicitBones() throws Exception {
         var files = files(); edit(files, "character.json", j -> j.getAsJsonObject("emotes").getAsJsonObject("demo_dance").remove("bones"));
         assertThrows(IllegalArgumentException.class, () -> CharacterBundle.create(files));

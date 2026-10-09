@@ -5,6 +5,9 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 
 ## [Unreleased]
 
+- Corregido: al terminar un emote, su pose seguía en bucle sobre los brazos y tapaba las animaciones de arco, escudo, ballesta y objetos. Los controladores de animación se reinician al detenerse.
+- Objetos en mano de personajes GeckoLib a escala del rig (una nutria sostiene objetos a la mitad de tamaño) y con el estado de uso del jugador: el arco se tensa y la ballesta se carga.
+- Nutria: herramientas y armas orientadas hacia arriba y al frente, pechera que cubre todo el torso y hombreras apoyadas en los brazos. La rotación de los anclajes admite hasta ±360°.
 - Documentación: `demo_dance` se presenta como emote de ejemplo añadido por el mod; la animación propia de la nutria es su caminar/idle.
 - Los morphs de mobs reproducen el golpe del jugador: el Golem de hierro levanta los brazos, el Warden, Ravager, Hoglin y Zoglin usan su animación de ataque y los humanoides balancean el brazo.
 - La explosión del Creeper rompe bloques como el mob real, respetando `mobGriefing` (nueva opción `creeperBreaksBlocks`, configuración versión 2).

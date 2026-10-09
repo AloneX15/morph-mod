@@ -38,23 +38,23 @@ public final class CharacterEntity extends ArmorStand implements GeoEntity {
     @Override public AnimatableInstanceCache getAnimatableInstanceCache() { return cache; }
     @Override public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<CharacterEntity>("movement", 4, test -> {
-            if (definition == null || (emote != null && emote.mode().equals("full"))) return PlayState.STOP;
+            if (definition == null || (emote != null && emote.mode().equals("full"))) return stop(test);
             return clip(test, AnimationResolver.movement(definition, locomotion, specialPose), true);
         }));
         controllers.add(new AnimationController<CharacterEntity>("right_arm", 2, test -> arm(test, true)));
         controllers.add(new AnimationController<CharacterEntity>("left_arm", 2, test -> arm(test, false)));
         controllers.add(new AnimationController<CharacterEntity>("both_hands", 2, test -> {
             if (definition == null || owner == null || owner.isUsingItem() || owner.getMainHandItem().isEmpty() || owner.getOffhandItem().isEmpty()
-                || (emote != null && emote.mode().equals("full"))) return PlayState.STOP;
+                || (emote != null && emote.mode().equals("full"))) return stop(test);
             return clip(test, AnimationResolver.resolve(definition, "special_pose.hold_both"), true);
         }));
         controllers.add(new AnimationController<CharacterEntity>("combat", 0, test -> {
-            if (owner == null || definition == null || !com.takumistudios.morphmod.compat.PlayerAnimationState.swinging(owner) || (emote != null && emote.mode().equals("full"))) return PlayState.STOP;
+            if (owner == null || definition == null || !com.takumistudios.morphmod.compat.PlayerAnimationState.swinging(owner) || (emote != null && emote.mode().equals("full"))) return stop(test);
             return clip(test, AnimationResolver.swing(definition, com.takumistudios.morphmod.compat.PlayerAnimationState.hand(owner) == net.minecraft.world.InteractionHand.MAIN_HAND, owner.getMainArm() == HumanoidArm.RIGHT), false);
         }));
         controllers.add(new AnimationController<CharacterEntity>("emote", 0, test -> {
-            if (emote == null || definition == null) { lastEmote = ""; return PlayState.STOP; }
-            var entry = definition.emotes().get(emote.id()); if (entry == null) return PlayState.STOP;
+            if (emote == null || definition == null) { lastEmote = ""; return stop(test); }
+            var entry = definition.emotes().get(emote.id()); if (entry == null) return stop(test);
             String name = emote.mode().equals("overlay") ? "__morph_overlay_" + emote.id() : entry.animation();
             PlayState result = clip(test, name, entry.loop());
             String key = emote.encode();
@@ -64,12 +64,14 @@ public final class CharacterEntity extends ArmorStand implements GeoEntity {
             return result;
         }));
     }
+    /** GeckoLib keeps looping a stopped clip and holds its pose over later controllers (a finished dance froze the arms); reset clears it. */
+    private static PlayState stop(AnimationTest<CharacterEntity> test) { test.controller().reset(); return PlayState.STOP; }
     private PlayState clip(AnimationTest<CharacterEntity> test, String clip, boolean loop) {
-        if (clip.isEmpty()) return PlayState.STOP;
+        if (clip.isEmpty()) return stop(test);
         return test.setAndContinue((loop ? loops : singles).computeIfAbsent(clip, name -> loop ? RawAnimation.begin().thenLoop(name) : RawAnimation.begin().thenPlay(name)));
     }
     private PlayState arm(AnimationTest<CharacterEntity> test, boolean right) {
-        if (owner == null || definition == null || (emote != null && emote.mode().equals("full"))) return PlayState.STOP;
+        if (owner == null || definition == null || (emote != null && emote.mode().equals("full"))) return stop(test);
         boolean main = (owner.getMainArm() == HumanoidArm.RIGHT) == right;
         boolean active = owner.isUsingItem() && (owner.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND) == main;
         ItemStack stack = main ? owner.getMainHandItem() : owner.getOffhandItem();
@@ -85,7 +87,7 @@ public final class CharacterEntity extends ArmorStand implements GeoEntity {
             if (!explicit.isEmpty()) clip = explicit;
         }
         if (clip.isEmpty() && specialPose) clip = AnimationResolver.resolve(definition, "special_pose." + (action.equals("item") ? "hold" : action) + (right ? "_right" : "_left"));
-        return stack.isEmpty() ? PlayState.STOP : clip(test, clip, true);
+        return stack.isEmpty() ? stop(test) : clip(test, clip, true);
     }
     public void copy(Player player) {
         owner = player; emote = CharacterManager.emote(player);

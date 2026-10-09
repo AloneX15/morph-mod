@@ -14,19 +14,19 @@ Morph **0.3.0** · [Index](EN-Index.md) · [Español](ES-Equipment.md)
 | `right_foot`, `left_foot` | Boots |
 | `elytra` | Elytra |
 
-An anchor contains a bone name and adjustments. Armor pieces are fitted automatically to the largest cube of the bone (or of its nearest parent with cubes, for empty locator bones such as `armorBipedHead`). For armor anchors, `scale` multiplies that automatic fit (1 = fitted to the bone) and `position` moves the piece in model units (16 units equal one block); `rotation` is not used for armor. For held items (`right_hand`, `left_hand`) position, rotation (degrees) and scale are local transforms of the item.
+An anchor contains a bone name and adjustments. Armor pieces are fitted automatically to the largest cube of the bone (or of its nearest parent with cubes, for empty locator bones such as `armorBipedHead`). For armor anchors, `scale` multiplies that automatic fit (1 = fitted to the bone) and `position` moves the piece in model units (16 units equal one block); `rotation` is not used for armor. For held items (`right_hand`, `left_hand`) position, rotation (degrees) and scale are local transforms of the item. Held items are first scaled to the size of the rig: a model half as tall as a player (32 units) holds items at half size, between 0.25 and 2; the anchor `scale` multiplies that value.
 
 ## Otter rig example
 
 ~~~json
 {
   "anchors": {
-    "right_hand": {"bone": "right_hand_item"},
-    "left_hand": {"bone": "left_hand_item"},
+    "right_hand": {"bone": "right_hand_item", "rotation": [120, 0, 0]},
+    "left_hand": {"bone": "left_hand_item", "rotation": [120, 0, 0]},
     "head": {"bone": "armorBipedHead"},
-    "chest": {"bone": "body_upper", "position": [0, 3.6, 0]},
-    "right_arm": {"bone": "right_arm", "position": [0.5, 0.4, 0], "scale": [1.3, 1.0, 1.3]},
-    "left_arm": {"bone": "left_arm", "position": [-0.5, 0.4, 0], "scale": [1.3, 1.0, 1.3]},
+    "chest": {"bone": "body_upper", "position": [0, 2.6, 0], "scale": [1.15, 1.6, 1.5]},
+    "right_arm": {"bone": "right_arm", "position": [0.2, -0.4, 0], "scale": [1.3, 1, 1.3]},
+    "left_arm": {"bone": "left_arm", "position": [-0.2, -0.4, 0], "scale": [1.3, 1, 1.3]},
     "right_leg": {"bone": "right_leg", "position": [0, 0.7, 0]},
     "left_leg": {"bone": "left_leg", "position": [0, 0.7, 0]},
     "right_foot": {"bone": "right_leg", "position": [0, 0.7, 0]},
@@ -36,7 +36,7 @@ An anchor contains a bone name and adjustments. Armor pieces are fitted automati
 }
 ~~~
 
-The offsets compensate for pivots that are not where a player's are: `body_upper` pivots near the bottom of its cube, so the chestplate is raised 3.6 units. The X axis is mirrored by GeckoLib, so a positive X offset moves the right arm piece outwards.
+The offsets compensate for pivots that are not where a player's are: `body_upper` pivots near the bottom of its cube, so the chestplate is raised 2.6 units and stretched (`scale`) to cover the belly (`body_lower`) as well. The item bones `right_hand_item`/`left_hand_item` come tilted 60° in the rig; the 120° rotation leaves the blade pointing up and forward from the paw. The X axis is mirrored by GeckoLib, so a positive X offset moves the right arm piece outwards.
 
 Merge this fragment into a manifest using those bones. For your own rig, change names and offsets. Unknown anchors are omitted; they do not alone invalidate the character, and equipment keeps its gameplay effects.
 

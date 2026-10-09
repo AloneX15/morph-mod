@@ -61,7 +61,7 @@ public record CharacterDefinition(String id, String name, boolean free, float sc
             JsonObject a = e.getValue().getAsJsonObject();
             String bone = a.get("bone").getAsString();
             // Missing anchors are omitted deliberately; equipment continues to work.
-            if (bones.contains(bone)) anchors.put(e.getKey(), new Anchor(bone, vector(a, "position", 0), vector(a, "rotation", 0), vector(a, "scale", 1)));
+            if (bones.contains(bone)) anchors.put(e.getKey(), new Anchor(bone, vector(a, "position", 0, 128), vector(a, "rotation", 0, 360), vector(a, "scale", 1, 128)));
         });
         Map<String, Emote> emotes = new HashMap<>();
         if (json.has("emotes")) json.getAsJsonObject("emotes").entrySet().forEach(e -> {
@@ -91,14 +91,14 @@ public record CharacterDefinition(String id, String name, boolean free, float sc
             throw new IllegalArgumentException("Unsafe resource path: " + path);
         return path;
     }
-    private static float[] vector(JsonObject json, String key, float fallback) {
+    private static float[] vector(JsonObject json, String key, float fallback, float limit) {
         float[] v = {fallback, fallback, fallback};
         if (json.has(key)) {
             JsonArray array = json.getAsJsonArray(key);
             if (array.size() != 3) throw new IllegalArgumentException("Vector must have 3 values");
             for (int i = 0; i < 3; i++) {
                 v[i] = array.get(i).getAsFloat();
-                if (!Float.isFinite(v[i]) || Math.abs(v[i]) > 128) throw new IllegalArgumentException("Invalid anchor vector");
+                if (!Float.isFinite(v[i]) || Math.abs(v[i]) > limit) throw new IllegalArgumentException("Invalid anchor vector");
             }
         }
         return v;

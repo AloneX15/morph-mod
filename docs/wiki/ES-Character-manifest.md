@@ -41,7 +41,7 @@ Coloca los tres archivos de Otter junto a este manifiesto. Se crea otro personaj
 
 ## Anclajes
 
-Cada entrada de `anchors` contiene `bone` y, opcionalmente, `position`, `rotation` y `scale`. Son vectores de tres números finitos, con valor absoluto máximo 128. Defaults: posición y rotación [0,0,0], escala [1,1,1]. Un hueso inexistente hace que se omita ese anclaje.
+Cada entrada de `anchors` contiene `bone` y, opcionalmente, `position`, `rotation` y `scale`. Son vectores de tres números finitos; posición y escala admiten un valor absoluto máximo de 128 y la rotación (grados), de 360. Defaults: posición y rotación [0,0,0], escala [1,1,1]. Un hueso inexistente hace que se omita ese anclaje.
 
 ## Emotes
 

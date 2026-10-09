@@ -124,6 +124,37 @@ public class MorphClientGameTest implements FabricClientGameTest {
 			world.getServer().runCommand("item replace entity @a armor.chest with minecraft:elytra");
 			context.waitTicks(5);
 			context.takeScreenshot("morph-otter-equipment");
+			world.getServer().runCommand("item replace entity @a armor.chest with minecraft:diamond_chestplate");
+			world.getServer().runCommand("item replace entity @a weapon.mainhand with minecraft:diamond_pickaxe");
+			world.getServer().runCommand("item replace entity @a weapon.offhand with minecraft:shield");
+			context.runOnClient(mc -> mc.player.setYRot(mc.player.getYRot() - 90));
+			context.waitTicks(15);
+			context.takeScreenshot("morph-otter-tools");
+			context.runOnClient(mc -> mc.player.setYRot(mc.player.getYRot() + 90));
+			context.waitTicks(15);
+			context.takeScreenshot("morph-otter-tools-side");
+			context.getInput().holdKey(options -> options.keyUse);
+			context.waitTicks(10);
+			context.takeScreenshot("morph-otter-shield-block");
+			context.getInput().releaseKey(options -> options.keyUse);
+			world.getServer().runCommand("item replace entity @a weapon.offhand with minecraft:air");
+			world.getServer().runCommand("item replace entity @a weapon.mainhand with minecraft:bow");
+			world.getServer().runCommand("give @a minecraft:arrow 16");
+			context.waitTicks(5);
+			context.getInput().holdKey(options -> options.keyUse);
+			context.waitTicks(25);
+			context.takeScreenshot("morph-otter-bow-draw");
+			context.runOnClient(mc -> check(mc.player.isUsingItem(), "bow drawn while morphed"));
+			context.runOnClient(mc -> {
+				// A finished emote must release the arms: GeckoLib keeps looping stopped clips unless the controller is reset.
+				var proxy = com.takumistudios.morphmod.client.character.CharacterRenderManager.proxy(mc.player);
+				com.geckolib.animatable.manager.AnimatableManager<com.takumistudios.morphmod.character.CharacterEntity> manager = proxy.getAnimatableInstanceCache().getManagerForId(proxy.getId());
+				check(!manager.getAnimationControllers().get("emote").isAnimatingBones(), "ended emote no longer poses the arms");
+				check(manager.getAnimationControllers().get("right_arm").isAnimatingBones(), "bow pose plays on the arm");
+			});
+			context.getInput().releaseKey(options -> options.keyUse);
+			world.getServer().runCommand("item replace entity @a weapon.mainhand with minecraft:diamond_sword");
+			context.waitTicks(5);
 			context.runOnClient(mc -> { mc.options.fov().set(fov); mc.player.setXRot(0); hideHud(mc, false); });
 			context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			context.waitTicks(15);
