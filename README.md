@@ -90,6 +90,34 @@ Se excluyen jugadores, soportes para armaduras, maniquíes y el dragón. En el m
 
 ## Configuración
 
+### Caminar con la skin del jugador
+
+Los jugadores en forma humana usan una adaptación nativa para **26.1.x, 26.2 y
+26.3** del caminar procedural de `dedsafio_4.animation.json`: balanceo de brazos
+y piernas, ligera oscilación del torso y cabeza y movimiento agachado más lento.
+Funciona con skins normales y slim y conserva las capas de la skin y la armadura.
+Se activa automáticamente; no necesitas copiar el JSON original ni un modelo GeckoLib.
+
+El port cubre los canales `idle` y `sneaking` del archivo. Las poses de objetos,
+ataques, saltos, natación, élitros, monturas y sueño siguen las animaciones de
+Minecraft. Los morphs de mobs y personajes personalizados mantienen sus animaciones.
+No cambia velocidad, colisión, estadísticas ni brazos en primera persona.
+
+Cada cliente puede desactivarlo en `config/morphmod-client.json` y reiniciar el juego:
+
+```json
+{
+  "schemaVersion": 1,
+  "playerWalkAnimation": false
+}
+```
+
+Por defecto es `true`. Este ajuste es local: cada observador decide cómo ve a los
+jugadores humanos. Para usar otro mod de animaciones del jugador, puedes desactivarlo.
+Un JSON inválido se copia a `.bak` y se regeneran los valores por defecto.
+
+### Configuración del servidor
+
 El archivo `config/morphmod.json` se crea en el primer arranque y solo lo lee el servidor:
 
 ```json

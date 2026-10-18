@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 public class MorphModClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		com.takumistudios.morphmod.client.render.PlayerAnimationConfig.init();
 		MorphKeybinds.init();
 		com.takumistudios.morphmod.client.character.CharacterRenderManager.init();
 		com.takumistudios.morphmod.client.character.ClientCharacters.init();

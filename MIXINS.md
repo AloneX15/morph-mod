@@ -5,6 +5,9 @@ una API equivalente para sustituir el modelo de un jugador y mantener sus colisi
 
 | Mixin | Objetivo | Motivo | Riesgo de conflicto |
 |---|---|---|---|
+| PlayerWalkStateMixin | `AvatarRenderState` | Conserva velocidad horizontal y elegibilidad extraídas para el caminar humano. | Otros mods que sustituyan el estado de avatar. |
+| PlayerWalkExtractionMixin | `AvatarRenderer.extractRenderState` | Extrae solo jugadores humanos en suelo; excluye maniquíes, morphs y estados especiales. Reinicia los datos al reutilizar estados. | Mods que reemplacen por completo la extracción del avatar. |
+| PlayerWalkModelMixin | `HumanoidModel.setupAnim`, antes de `isPassenger` | Sustituye el movimiento base de jugadores humanos y su armadura antes de poses de objetos y combate. | Mods de animaciones del jugador; desactivar `playerWalkAnimation` en la configuración cliente. |
 | AvatarMixin | `Avatar.getDefaultDimensions` | Hitbox y altura de ojos de la forma; excluye dormir y morir. | Mods de tamaño y otros sistemas de morph. |
 | PlayerMixin | `Player.onClimbable` | Trepar paredes solo para formas con esa pasiva. | Mods de movimiento y escalada. |
 | LevelExtractorMixin | `LevelExtractor.extractVisibleEntities` (26.2+) / `LevelRenderer.extractVisibleEntities` (26.1.x) | Sustituye únicamente el estado de render de jugadores transformados mediante WrapOperation. | Mods que sustituyen completamente la extracción de entidades. |

@@ -35,6 +35,43 @@ public class MorphClientGameTest implements FabricClientGameTest {
 			*///?}
 			world.getServer().runCommand("time set day");
 			world.getServer().runCommand("gamemode survival @a");
+			context.waitFor(mc -> mc.player != null && mc.player.onGround());
+			context.runOnClient(mc -> {
+                var renderer = (net.minecraft.client.renderer.entity.player.AvatarRenderer<LocalPlayer>)mc.getEntityRenderDispatcher().getRenderer(mc.player);
+                var state = (net.minecraft.client.renderer.entity.state.AvatarRenderState)renderer.createRenderState(mc.player, 0);
+                var walk = (com.takumistudios.morphmod.client.render.PlayerWalkState)state;
+                check(walk.morphmod$walkEnabled(), "human player locomotion extracted");
+                walk.morphmod$setWalk(true, 0.2F);
+                state.ageInTicks = 3;
+                renderer.getModel().setupAnim(state);
+                check(Math.abs(renderer.getModel().rightLeg.xRot - com.takumistudios.morphmod.character.PlayerLocomotion.radians(8)) < 0.0001F, "ported walk applied to player model");
+                state.isCrouching = true;
+                state.ageInTicks = 9;
+                renderer.getModel().setupAnim(state);
+                check(Math.abs(renderer.getModel().rightArm.xRot - com.takumistudios.morphmod.character.PlayerLocomotion.radians(-10)) < 0.1F, "crouch arm offset applied once");
+                state.isCrouching = false;
+                state.rightArmPose = net.minecraft.client.model.HumanoidModel.ArmPose.BOW_AND_ARROW;
+                renderer.getModel().setupAnim(state);
+                check(Math.abs(renderer.getModel().rightArm.xRot + (float)Math.PI / 2 - renderer.getModel().head.xRot) < 0.1F, "bow pose overrides walking arms");
+                mc.player.setOnGround(false);
+                state = (net.minecraft.client.renderer.entity.state.AvatarRenderState)renderer.createRenderState(mc.player, 0);
+                check(!((com.takumistudios.morphmod.client.render.PlayerWalkState)state).morphmod$walkEnabled(), "airborne resets reused walk state");
+                mc.player.setOnGround(true);
+            });
+            context.runOnClient(mc -> {
+                mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+                mc.options.keyUp.setDown(true);
+            });
+            context.waitTicks(8);
+            context.takeScreenshot("morph-human-walk");
+            context.runOnClient(mc -> mc.options.keyShift.setDown(true));
+            context.waitTicks(8);
+            context.takeScreenshot("morph-human-sneak-walk");
+            context.runOnClient(mc -> {
+                mc.options.keyUp.setDown(false);
+                mc.options.keyShift.setDown(false);
+                mc.options.setCameraType(CameraType.FIRST_PERSON);
+            });
 			context.waitFor(mc -> com.takumistudios.morphmod.client.character.ClientCharacters.get("morphmod:otter") != null, 600);
 			context.waitFor(mc -> com.takumistudios.morphmod.client.character.ClientCharacters.allowed("morphmod:otter"));
 			if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("luckperms")) {
@@ -55,6 +92,9 @@ public class MorphClientGameTest implements FabricClientGameTest {
 			context.runOnClient(mc -> {
 				var proxy = com.takumistudios.morphmod.client.character.CharacterRenderManager.proxy(mc.player);
 				check(proxy != null && proxy.definition.id().equals("morphmod:otter"), "custom character proxy");
+                var vanillaRenderer = (net.minecraft.client.renderer.entity.player.AvatarRenderer<LocalPlayer>)mc.getEntityRenderDispatcher().getRenderer(mc.player);
+                var vanillaState = vanillaRenderer.createRenderState(mc.player, 0);
+                check(!((com.takumistudios.morphmod.client.render.PlayerWalkState)vanillaState).morphmod$walkEnabled(), "custom characters excluded from human locomotion");
 				check(mc.player.getMaxHealth() == 20, "character uses human stats");
 				check(Math.abs(mc.player.getBbHeight() - 1.8F) < 0.01F, "character keeps human dimensions");
 				var renderer = (com.takumistudios.morphmod.client.character.CharacterRenderer)mc.getEntityRenderDispatcher().getRenderer(proxy);

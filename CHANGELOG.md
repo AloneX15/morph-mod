@@ -5,6 +5,8 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 
 ## [Unreleased]
 
+- Caminar humano adaptado de los canales `idle` y `sneaking` de `dedsafio_4.animation.json` a 26.1.x, 26.2 y 26.3, con la skin y armadura del jugador. Conserva poses vanilla de objetos y combate; configuración cliente `playerWalkAnimation` para desactivarlo.
+
 - Corregido: al terminar un emote, su pose seguía en bucle sobre los brazos y tapaba las animaciones de arco, escudo, ballesta y objetos. Los controladores de animación se reinician al detenerse.
 - Objetos en mano de personajes GeckoLib a escala del rig (una nutria sostiene objetos a la mitad de tamaño) y con el estado de uso del jugador: el arco se tensa y la ballesta se carga.
 - Nutria: herramientas y armas orientadas hacia arriba y al frente, pechera que cubre todo el torso y hombreras apoyadas en los brazos. La rotación de los anclajes admite hasta ±360°.
