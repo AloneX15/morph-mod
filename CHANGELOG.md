@@ -5,7 +5,8 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 
 ## [Unreleased]
 
-- Catálogo de perfiles completos de animación humana en el servidor: importación de JSON MoLang/keyframes, distribución por hash, recarga y adaptación del rig vanilla en tercera y primera persona.
+- Catálogo de perfiles completos de animación humana en el servidor: importación de JSON MoLang/keyframes, distribución por hash, recarga y adaptación del rig vanilla en tercera persona; la primera persona conserva las manos y objetos de Minecraft.
+- Corregido: al agacharse con `dedsafio_4`, la cabeza se hundía en el torso y el tronco se separaba de las piernas. La inclinación pivota en la cadera y cabeza y brazos siguen al torso.
 - Comandos `/morph animation`, perfil global, excepciones persistentes por UUID, reglas de LuckPerms con prioridades y modo global forzado temporal. El servidor prevalece sobre la preferencia visual local.
 - Perfiles incluidos `morphmod:vanilla`, `morphmod:legacy_walk` y `morphmod:dedsafio_4`; guía de administración en `docs/ANIMACIONES.md` y pruebas de servidor, cliente y sincronización multijugador.
 

@@ -51,6 +51,9 @@ public final class AnimationClientGameTest implements FabricClientGameTest {
             });
             context.takeScreenshot("animation-profile-crouch");
             context.getInput().releaseKey(options -> options.keyShift); context.getInput().releaseKey(options -> options.keyUp);
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+            context.waitTicks(5); context.takeScreenshot("animation-profile-first-person-empty");
+            context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
             world.getServer().runCommand("item replace entity @a armor.chest with minecraft:diamond_chestplate");
             world.getServer().runCommand("item replace entity @a weapon.mainhand with minecraft:diamond_pickaxe");
             world.getServer().runCommand("item replace entity @a weapon.offhand with minecraft:shield");

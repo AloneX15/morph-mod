@@ -14,7 +14,6 @@
 		"PlayerWalkExtractionMixin",
 		"PlayerWalkModelMixin",
 		"AnimationRotationsMixin",
-		"AnimationFirstPersonMixin",
 		"AnimationWingsMixin"
 	],
 	"injectors": {

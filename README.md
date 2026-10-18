@@ -95,7 +95,7 @@ Se excluyen jugadores, soportes para armaduras, maniquíes y el dragón. En el m
 El servidor puede elegir las animaciones de los jugadores humanos para **26.1.x,
 26.2 y 26.3**, conservando su skin normal o slim, armadura y objetos. Los perfiles
 pueden incluir caminar, agacharse, ataques, uso de objetos, natación, élitros y
-otras poses, con brazos y objetos adaptados también en primera persona.
+otras poses. En primera persona se conservan las manos y objetos de Minecraft.
 
 Sube una carpeta con `profile.json` y su `.animation.json` a
 `config/morphmod/animations/` en el servidor. Recarga y elige el perfil:

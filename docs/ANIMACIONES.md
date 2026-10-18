@@ -163,11 +163,10 @@ un pie independiente no tienen reproducción exacta sobre una skin vanilla.
 Los huesos desconocidos y eventos de sonido/partículas/timeline se omiten con aviso.
 Escalas no uniformes combinadas con rotaciones jerárquicas se aproximan sin cizalla.
 
-En primera persona se adaptan brazos y objetos desde los hombros y se limitan sus
-ángulos y desplazamientos para mantenerlos delante de la cámara. No se aplican los
-desplazamientos globales de `root`/`waist`. Mapas y el visor del catalejo conservan
-su render específico de Minecraft. Armadura y capas de la skin siguen las poses en
-tercera persona. Los morphs y personajes GeckoLib suspenden el perfil humano.
+En primera persona se usan las manos y objetos de Minecraft, con su balanceo, golpe,
+comer, arco, escudo, mapas y catalejo: los perfiles animan el cuerpo que ven los demás
+y la vista en tercera persona. Armadura y capas de la skin siguen esas poses.
+Los morphs y personajes GeckoLib suspenden el perfil humano.
 
 ## Compatibilidad y fallos
 
