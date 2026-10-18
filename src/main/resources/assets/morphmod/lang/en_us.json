@@ -72,5 +72,10 @@
   "commands.morphmod.animations.failed": "Could not load or save animation profiles. Previous settings retained; see the log.",
   "commands.morphmod.animations.output": "%s",
   "commands.morphmod.animations.unknown": "Unknown animation profile: %s",
-  "commands.morphmod.animations.updated": "Animation profiles updated."
+  "commands.morphmod.animations.updated": "Animation profiles updated.",
+  "commands.morphmod.preview.failed": "Could not preview %s: %s",
+  "commands.morphmod.preview.loaded": "Previewing %s (%s) on your client only. Use /morphpreview off to go back.",
+  "commands.morphmod.preview.none": "No preview is active.",
+  "commands.morphmod.preview.off": "Preview disabled.",
+  "commands.morphmod.preview.warnings": "Import warnings:\n%s"
 }

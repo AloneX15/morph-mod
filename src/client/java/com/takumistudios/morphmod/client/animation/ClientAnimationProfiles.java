@@ -38,7 +38,24 @@ public final class ClientAnimationProfiles {
     private static final Set<String> FAILED = new HashSet<>();
     public static boolean failed(String hash) { return FAILED.contains(hash); }
     public static void fail(String hash, Throwable error) { if (FAILED.add(hash)) MorphMod.LOGGER.warn("Animation profile {} disabled; using vanilla", hash, error); }
-    public static void failProfile(String id, Throwable error) { var profile = get(id); if (profile != null) fail(profile.hash(), error); }
+    public static void failProfile(String id, Throwable error) {
+        var local = preview; var profile = local != null && local.id().equals(id) ? local : get(id);
+        if (profile != null) fail(profile.hash(), error);
+    }
+    // Local-only preview of a profile folder; never sent to the server and cleared on disconnect.
+    private static volatile AnimationProfile preview;
+    private static volatile String previewName;
+    public static AnimationProfile preview() { return preview; }
+    public static String previewName() { return previewName; }
+    public static CompletableFuture<AnimationProfile> loadPreview(String name) {
+        if (!name.matches("[a-z0-9_.-]{1,64}") || name.contains("..")) return CompletableFuture.failedFuture(new IllegalArgumentException("Invalid folder name"));
+        Path folder = FabricLoader.getInstance().getConfigDir().resolve("morphmod/animations").resolve(name);
+        return CompletableFuture.supplyAsync(() -> {
+            try { return AnimationCatalog.loadDirectory(folder); }
+            catch (IOException e) { throw new CompletionException(e); }
+        }, IO).thenApplyAsync(profile -> { preview = profile; previewName = name; FAILED.remove(profile.hash()); return profile; }, Minecraft.getInstance());
+    }
+    public static void clearPreview() { preview = null; previewName = null; }
     // IO-thread-owned state below.
     private static String revision = "";
     private static Map<String, Entry> offered = Map.of();
@@ -73,7 +90,7 @@ public final class ClientAnimationProfiles {
         ClientLifecycleEvents.CLIENT_STOPPING.register(mc -> IO.shutdown());
     }
     public static void reset() {
-        generation++; profiles = Map.of(); assignments.clear(); managed = false; FAILED.clear(); PHASES.clear();
+        generation++; profiles = Map.of(); assignments.clear(); managed = false; FAILED.clear(); PHASES.clear(); clearPreview();
         IO.execute(() -> { revision = ""; offered = Map.of(); pending.clear(); assemblies.clear(); });
     }
     private static void receive(AnimationPayload payload, long token, Consumer<AnimationPayload> reply) {

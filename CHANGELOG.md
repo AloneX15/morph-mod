@@ -6,9 +6,14 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 ## [Unreleased]
 
 - Catálogo de perfiles completos de animación humana en el servidor: importación de JSON MoLang/keyframes, distribución por hash, recarga y adaptación del rig vanilla en tercera persona; la primera persona conserva las manos y objetos de Minecraft.
-- Corregido: al agacharse con `dedsafio_4`, la cabeza se hundía en el torso y el tronco se separaba de las piernas. La inclinación pivota en la cadera y cabeza y brazos siguen al torso.
+- Corregido: al agacharse con un perfil importado, la cabeza se hundía en el torso y el tronco se separaba de las piernas. Si el clip de agacharse anima `body`, el perfil controla toda la pose; opción `"bodyPivot": "hip"` para torsos que pivotan en la cintura.
+- Corregido: con élitros, el cuerpo de los perfiles Dedsafio no seguía la mirada.
+- `"firstPerson": true` opcional para animar los brazos de primera persona con el perfil.
+- `/morphpreview load|reload|off`: previsualizar una carpeta de perfil en tu propio cliente, sin servidor ni permisos.
+- Avisos de importación para huesos que parecen alias (`head_scale`), natación/élitros con `waist` fijo y `sleep` con rotación duplicada.
+- Perfil incluido `morphmod:dedsafio_3`; las carpetas incluidas sin editar se actualizan con el mod.
 - Comandos `/morph animation`, perfil global, excepciones persistentes por UUID, reglas de LuckPerms con prioridades y modo global forzado temporal. El servidor prevalece sobre la preferencia visual local.
-- Perfiles incluidos `morphmod:vanilla`, `morphmod:legacy_walk` y `morphmod:dedsafio_4`; guía de administración en `docs/ANIMACIONES.md` y pruebas de servidor, cliente y sincronización multijugador.
+- Perfiles incluidos `morphmod:vanilla`, `morphmod:legacy_walk`, `morphmod:dedsafio_3` y `morphmod:dedsafio_4`; guía de administración en `docs/ANIMACIONES.md` y pruebas de servidor, cliente y sincronización multijugador.
 
 - Caminar humano adaptado de los canales `idle` y `sneaking` de `dedsafio_4.animation.json` a 26.1.x, 26.2 y 26.3, con la skin y armadura del jugador. Conserva poses vanilla de objetos y combate; configuración cliente `playerWalkAnimation` para desactivarlo.
 

@@ -26,6 +26,7 @@ public final class AnimationClientGameTest implements FabricClientGameTest {
                 var renderer = (AvatarRenderer<LocalPlayer>)mc.getEntityRenderDispatcher().getRenderer(mc.player);
                 var state = renderer.createRenderState(mc.player, 0); var animation = ((PlayerWalkState)state).morphmod$animationPose();
                 check(animation.active && !animation.legacy && animation.managed, "server selects imported full profile");
+                check(!animation.firstPerson, "first person keeps vanilla hands unless the profile opts in");
                 renderer.getModel().setupAnim(state);
                 check(Math.abs(renderer.getModel().rightArm.xRot - (float)Math.toRadians(-2.5)) < 0.01F, "imported idle overrides vanilla baseline");
                 float previousPitch = mc.player.getXRot(); var previousPose = mc.player.getPose();
@@ -48,9 +49,12 @@ public final class AnimationClientGameTest implements FabricClientGameTest {
                 var renderer = (AvatarRenderer<LocalPlayer>)mc.getEntityRenderDispatcher().getRenderer(mc.player);
                 var state = renderer.createRenderState(mc.player, 0); renderer.getModel().setupAnim(state);
                 check(Math.abs(renderer.getModel().body.xRot - (float)Math.toRadians(28)) < 0.01F, "imported crouch leans forward in model space");
+                attached(renderer.getModel(), ID);
             });
             context.takeScreenshot("animation-profile-crouch");
+            side(context, "animation-profile-crouch-side");
             context.getInput().releaseKey(options -> options.keyShift); context.getInput().releaseKey(options -> options.keyUp);
+            dedsafio3(context, world);
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
             context.waitTicks(5); context.takeScreenshot("animation-profile-first-person-empty");
             context.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
@@ -133,6 +137,64 @@ public final class AnimationClientGameTest implements FabricClientGameTest {
             } finally { Files.write(manifest, original); Files.write(animationFile, originalAnimation); }
             world.getServer().runCommand("morph animation reload"); context.waitFor(mc -> ClientAnimationProfiles.get(ID).hash().equals(old.hash()), 600);
         } catch (java.io.IOException e) { throw new AssertionError(e); }
+    }
+    /** Second bundled profile: crouch attachment, elytra orientation and the local preview command. */
+    private void dedsafio3(ClientGameTestContext context, TestSingleplayerContext world) {
+        String other = "morphmod:dedsafio_3";
+        world.getServer().runCommand("morph animation set @a " + other);
+        context.waitFor(mc -> ClientAnimationProfiles.selected(mc.player.getUUID()).equals(other));
+        context.getInput().holdKey(options -> options.keyShift); context.waitTicks(8);
+        context.runOnClient(mc -> {
+            var renderer = (AvatarRenderer<LocalPlayer>)mc.getEntityRenderDispatcher().getRenderer(mc.player);
+            var state = renderer.createRenderState(mc.player, 0); renderer.getModel().setupAnim(state);
+            check(Math.abs(renderer.getModel().body.xRot - (float)Math.toRadians(25.5)) < 0.01F, "dedsafio_3 crouch lean");
+            attached(renderer.getModel(), other);
+        });
+        side(context, "animation-profile-dedsafio3-crouch-side");
+        context.getInput().releaseKey(options -> options.keyShift);
+        world.getServer().runCommand("item replace entity @a armor.chest with minecraft:elytra");
+        var ground = context.computeOnClient(mc -> mc.player.position());
+        world.getServer().runCommand("tp @a " + ground.x + " " + (ground.y + 30) + " " + ground.z); context.waitTicks(3);
+        world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().forEach(net.minecraft.world.entity.player.Player::startFallFlying));
+        context.waitFor(mc -> mc.player.isFallFlying(), 40);
+        context.runOnClient(mc -> {
+            var renderer = (AvatarRenderer<LocalPlayer>)mc.getEntityRenderDispatcher().getRenderer(mc.player);
+            check(((PlayerWalkState)renderer.createRenderState(mc.player, 0)).morphmod$animationPose().replacesBodyOrientation(), "elytra waist follows the view");
+        });
+        side(context, "animation-profile-dedsafio3-elytra-side");
+        world.getServer().runCommand("item replace entity @a armor.chest with minecraft:air");
+        world.getServer().runCommand("tp @a " + ground.x + " " + ground.y + " " + ground.z);
+        context.waitFor(mc -> mc.player.onGround() && !mc.player.isFallFlying(), 100);
+        context.runOnClient(mc -> mc.player.connection.sendCommand("morphpreview load dedsafio_4"));
+        context.waitFor(mc -> profileOf(mc).equals(ID), 200);
+        check(context.computeOnClient(mc -> ClientAnimationProfiles.selected(mc.player.getUUID())).equals(other), "preview never changes the server assignment");
+        context.runOnClient(mc -> mc.player.connection.sendCommand("morphpreview off"));
+        context.waitFor(mc -> profileOf(mc).equals(other), 40);
+        world.getServer().runCommand("morph animation set @a " + ID);
+        context.waitFor(mc -> ClientAnimationProfiles.selected(mc.player.getUUID()).equals(ID));
+    }
+    private static String profileOf(net.minecraft.client.Minecraft mc) {
+        var renderer = (AvatarRenderer<LocalPlayer>)mc.getEntityRenderDispatcher().getRenderer(mc.player);
+        return ((PlayerWalkState)renderer.createRenderState(mc.player, 0)).morphmod$animationPose().profileId;
+    }
+    /** Third-person shot with the body turned sideways to the front camera, where torso gaps show. */
+    private static void side(ClientGameTestContext context, String name) {
+        context.runOnClient(mc -> { float yaw = mc.player.getYRot() + 75; mc.player.yBodyRot = yaw; mc.player.yBodyRotO = yaw; });
+        context.takeScreenshot(name);
+    }
+    /** Head on the neck, shoulders on the torso and hips over the legs, in model space. */
+    private static void attached(net.minecraft.client.model.HumanoidModel<?> model, String label) {
+        var body = model.body; var turn = new org.joml.Quaternionf().rotationZYX(body.zRot, body.yRot, body.xRot);
+        var neck = new org.joml.Vector3f(body.x, body.y, body.z);
+        check(neck.distance(model.head.x, model.head.y, model.head.z) < 0.75F, label + ": head stays on the neck");
+        for (int side = -1; side <= 1; side += 2) {
+            var arm = side < 0 ? model.rightArm : model.leftArm;
+            var shoulder = turn.transform(new org.joml.Vector3f(side * 5, 2, 0)).add(neck);
+            check(shoulder.distance(arm.x, arm.y, arm.z) < 0.75F, label + ": arm stays on the shoulder");
+        }
+        var hip = turn.transform(new org.joml.Vector3f(0, 12, 0)).add(neck);
+        float legY = (model.rightLeg.y + model.leftLeg.y) / 2, legZ = (model.rightLeg.z + model.leftLeg.z) / 2;
+        check(Math.abs(hip.y - legY) < 1.5F && Math.abs(hip.z - legZ) < 1.5F, label + ": torso meets the legs (" + hip + " vs " + legY + ", " + legZ + ")");
     }
     private static void check(boolean condition, String label) { if (!condition) throw new AssertionError(label); }
 }

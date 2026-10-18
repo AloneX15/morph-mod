@@ -37,7 +37,12 @@ Perfiles incluidos:
 |---|---|
 | `morphmod:vanilla` | Animaciones originales de Minecraft. |
 | `morphmod:legacy_walk` | Caminar y agacharse del port anterior; perfil global inicial. |
-| `morphmod:dedsafio_4` | Archivo original completo, adaptado al cuerpo vanilla, con avisos de importación. |
+| `morphmod:dedsafio_3` | Archivo original de Dedsafio 3 adaptado a 26.x (`bodyPivot: hip`). |
+| `morphmod:dedsafio_4` | Archivo original completo, adaptado al cuerpo vanilla (`bodyPivot: hip`), con avisos de importación. |
+
+Las carpetas de los perfiles incluidos se crean si faltan. Al actualizar el mod, una
+carpeta incluida solo se reemplaza si **todos** sus archivos coinciden con una versión
+publicada anteriormente; si la has editado, se conserva tal cual.
 
 ## Subir otro perfil
 
@@ -71,6 +76,15 @@ El ejemplo de bindings corresponde a un archivo procedural como Dedsafio: su `id
 ya contiene el caminar mediante `query.ground_speed`. Ajusta los nombres a los clips
 de tu archivo. `bindings` y `boneAliases` pueden omitirse. No subas un modelo ni una
 textura: el perfil anima la skin normal o slim de cada jugador.
+
+Opciones del manifiesto (todas opcionales):
+
+| Campo | Valores | Efecto |
+|---|---|---|
+| `bodyPivot` | `"neck"` (por defecto) o `"hip"` | Punto desde el que gira `body`. Usa `"hip"` si en Blockbench el torso del modelo pivota en la cintura, como en Dedsafio: así se inclina sin separarse de las piernas. |
+| `firstPerson` | `false` (por defecto) o `true` | Con `true`, los brazos y objetos de primera persona siguen la pose del perfil. Por defecto se usan las manos de Minecraft. |
+
+Antes de subirlo, pruébalo en tu propio cliente con `/morphpreview` (ver más abajo).
 
 Ejecuta `/morph animation reload`, revisa `/morph animation inspect servidor:elegante`
 y asigna el perfil. Las recargas fallidas conservan el catálogo y las asignaciones
@@ -163,10 +177,40 @@ un pie independiente no tienen reproducción exacta sobre una skin vanilla.
 Los huesos desconocidos y eventos de sonido/partículas/timeline se omiten con aviso.
 Escalas no uniformes combinadas con rotaciones jerárquicas se aproximan sin cizalla.
 
+Si el clip de agacharse anima `body`, el perfil controla toda la pose agachada: se
+descartan los desplazamientos que Minecraft aplica a cabeza, torso, brazos y piernas
+al agacharse, para que no se sumen a los del perfil.
+
+`/morph animation inspect` y `/morphpreview` avisan de problemas conocidos:
+
+| Aviso | Qué hacer |
+|---|---|
+| `omitted bone head_scale; map it with boneAliases {...}` | El hueso no existe en el cuerpo vanilla pero parece envolver uno canónico: añade el alias sugerido o renómbralo. |
+| `waist rotation ignores where the player looks` | En natación o élitros, `waist`/`root` con un ángulo fijo deja el cuerpo horizontal aunque mires arriba o abajo. Usa `"90+query.pitch"`. |
+| `rotation is added to the vanilla bed rotation` | En `sleep`, Minecraft ya tumba al jugador: quita la rotación de `waist`/`root`. |
+
 En primera persona se usan las manos y objetos de Minecraft, con su balanceo, golpe,
 comer, arco, escudo, mapas y catalejo: los perfiles animan el cuerpo que ven los demás
-y la vista en tercera persona. Armadura y capas de la skin siguen esas poses.
+y la vista en tercera persona. Con `"firstPerson": true` en el manifiesto, los brazos y
+objetos siguen la pose del perfil desde los hombros, con ángulos acotados para que se
+queden delante de la cámara; mapas y catalejo conservan su render de Minecraft.
+Armadura y capas de la skin siguen esas poses.
 Los morphs y personajes GeckoLib suspenden el perfil humano.
+
+## Previsualizar en tu cliente
+
+Para probar cambios sin tocar el servidor ni a otros jugadores, coloca la carpeta del
+perfil en `config/morphmod/animations/<carpeta>/` **de tu cliente** y usa:
+
+```text
+/morphpreview load <carpeta>
+/morphpreview reload
+/morphpreview off
+```
+
+La previsualización solo cambia cómo ves a tu propio jugador, muestra los avisos de
+importación y desaparece al desconectarte. `reload` vuelve a leer la misma carpeta
+tras editarla. No necesita permisos porque no sale de tu cliente.
 
 ## Compatibilidad y fallos
 

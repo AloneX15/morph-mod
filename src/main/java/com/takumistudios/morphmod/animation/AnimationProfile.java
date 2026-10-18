@@ -8,7 +8,7 @@ import java.util.*;
 
 /** Immutable import, validation report and content-addressed wire document. */
 public record AnimationProfile(String id, String name, Map<String, String> bindings, Map<String, Clip> clips,
-                               List<String> warnings, byte[] data, String hash) {
+                               List<String> warnings, byte[] data, String hash, boolean hipPivot, boolean firstPerson) {
     public static final Set<String> BONES = Set.of("root", "waist", "body", "body_upper", "head", "left_arm", "right_arm", "left_leg", "right_leg", "left_foot", "right_foot");
     public record Bone(AnimationChannel rotation, AnimationChannel position, AnimationChannel scale) { }
     public record Clip(double length, boolean loop, boolean hold, Map<String, Bone> bones) {
@@ -24,6 +24,9 @@ public record AnimationProfile(String id, String name, Map<String, String> bindi
         Map<String, String> bindings = strings(manifest, "bindings"), aliases = strings(manifest, "boneAliases");
         if (bindings.size() > 128 || aliases.size() > 128) throw new IllegalArgumentException("Too many profile mappings");
         aliases.values().forEach(b -> { if (!BONES.contains(b)) throw new IllegalArgumentException("Unknown canonical bone " + b); });
+        String pivot = option(manifest, "bodyPivot", "neck", JsonPrimitive::isString).getAsString();
+        if (!pivot.equals("neck") && !pivot.equals("hip")) throw new IllegalArgumentException("Invalid bodyPivot " + pivot);
+        boolean firstPerson = option(manifest, "firstPerson", false, JsonPrimitive::isBoolean).getAsBoolean();
         List<String> warnings = new ArrayList<>(); Map<String, Clip> clips = new TreeMap<>();
         JsonObject source = animation.getAsJsonObject("animations");
         if (source.size() > 512) throw new IllegalArgumentException("Too many clips");
@@ -44,7 +47,7 @@ public record AnimationProfile(String id, String name, Map<String, String> bindi
                     String bone = aliases.getOrDefault(channel.getKey(), channel.getKey()); JsonObject transforms = channel.getValue().getAsJsonObject();
                     // Validate even omitted channels: unknown bones cannot hide unsafe expressions.
                     AnimationChannel rotation = channel(transforms, "rotation"), position = channel(transforms, "position"), scale = channel(transforms, "scale");
-                    if (!BONES.contains(bone)) { warn(warnings, entry.getKey() + ": omitted bone " + channel.getKey()); continue; }
+                    if (!BONES.contains(bone)) { warn(warnings, entry.getKey() + ": omitted bone " + channel.getKey() + aliasHint(channel.getKey())); continue; }
                     if (bones.put(bone, new Bone(rotation, position, scale)) != null) throw new IllegalArgumentException("Multiple channels map to " + bone);
                     if (bone.endsWith("_foot")) warn(warnings, entry.getKey() + ": " + bone + " merged into vanilla leg");
                     if ((bone.equals("root") || bone.equals("waist") || bone.equals("body_upper")) && (rotation != null || position != null || scale != null))
@@ -61,12 +64,40 @@ public record AnimationProfile(String id, String name, Map<String, String> bindi
             clips.put(entry.getKey(), new Clip(length, looping, hold, Map.copyOf(bones)));
         }
         bindings.values().forEach(value -> { if (!clips.containsKey(value)) throw new IllegalArgumentException("Unknown bound clip " + value); });
-        try { return new AnimationProfile(id, name, Map.copyOf(bindings), Map.copyOf(clips), List.copyOf(warnings), data.clone(), HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(data))); }
+        for (String action : List.of("swim", "elytra", "sleep")) {
+            String clipName = clipName(bindings, clips.keySet(), action); if (clipName == null) continue;
+            for (String bone : List.of("root", "waist")) {
+                Bone channels = clips.get(clipName).bones().get(bone);
+                if (channels == null || channels.rotation() == null) continue;
+                if (action.equals("sleep")) warn(warnings, clipName + ": " + bone + " rotation is added to the vanilla bed rotation; remove it");
+                else if ((channels.rotation().lookQueries() & 1) == 0)
+                    warn(warnings, clipName + ": " + bone + " rotation ignores where the player looks; use query.pitch, for example \"90+query.pitch\"");
+            }
+        }
+        try { return new AnimationProfile(id, name, Map.copyOf(bindings), Map.copyOf(clips), List.copyOf(warnings), data.clone(), HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(data)), pivot.equals("hip"), firstPerson); }
         catch (NoSuchAlgorithmException e) { throw new IllegalStateException(e); }
     }
     private static void warn(List<String> warnings, String warning) {
         if (warnings.size() < 128) warnings.add(warning);
         else if (warnings.size() == 128) warnings.add("Additional import warnings omitted (limit 128)");
+    }
+    private static JsonPrimitive option(JsonObject manifest, String key, Object fallback, java.util.function.Predicate<JsonPrimitive> type) {
+        if (!manifest.has(key)) return fallback instanceof Boolean value ? new JsonPrimitive(value) : new JsonPrimitive((String)fallback);
+        JsonElement value = manifest.get(key);
+        if (!value.isJsonPrimitive() || !type.test(value.getAsJsonPrimitive())) throw new IllegalArgumentException("Invalid " + key);
+        return value.getAsJsonPrimitive();
+    }
+    /** Suggests the canonical bone an unknown name probably wraps, such as head_scale to head. */
+    private static String aliasHint(String name) {
+        return BONES.stream().filter(b -> name.startsWith(b + "_") || name.endsWith("_" + b))
+            .max(Comparator.comparingInt(String::length).thenComparing(Comparator.reverseOrder()))
+            .map(b -> "; map it with boneAliases {\"" + name + "\": \"" + b + "\"}").orElse("");
+    }
+    private static String clipName(Map<String, String> bindings, Set<String> clips, String action) {
+        if (bindings.containsKey(action)) return bindings.get(action);
+        if (clips.contains(action)) return action;
+        for (String alias : ALIASES.getOrDefault(action, List.of())) if (clips.contains(alias)) return alias;
+        return null;
     }
     private static AnimationChannel channel(JsonObject object, String key) { return object.has(key) ? AnimationChannel.parse(object.get(key)) : null; }
     private static Map<String, String> strings(JsonObject json, String key) {

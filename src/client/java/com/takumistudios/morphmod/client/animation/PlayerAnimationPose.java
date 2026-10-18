@@ -19,6 +19,7 @@ import org.joml.Vector3f;
 public final class PlayerAnimationPose {
     public static final List<String> NAMES = List.of("root", "waist", "body", "body_upper", "head", "right_arm", "left_arm", "right_leg", "left_leg", "right_foot", "left_foot");
     private static final int[] PARENT = {-1, 0, 1, 2, 3, 3, 3, 1, 1, 7, 8};
+    private static final float[] HIP_PIVOT = {0, 12, 0};
     private static final float[][] PIVOT = {{0,24,0},{0,0,0},{0,0,0},{0,4,0},{0,0,0},{-5,2,0},{5,2,0},{-1.9F,12,0},{1.9F,12,0},{-1.9F,24,0},{1.9F,24,0}};
     private final float[][] values = new float[11][9];
     private final int[] masks = new int[11];
@@ -34,23 +35,30 @@ public final class PlayerAnimationPose {
     public boolean eligible;
     public boolean legacy;
     public boolean managed;
+    /** Profile opted in to animated first-person arms ("firstPerson": true). */
+    public boolean firstPerson;
+    private boolean hipPivot, ownsCrouch;
+    private static final float HIP_Y = 12;
     public String profileId = "morphmod:vanilla";
     public PlayerAnimationPose() {
         for (int i = 0; i < 11; i++) { world[i] = new Matrix4f(); rotation[i] = new Quaternionf(); scale[i] = new Vector3f(1); }
     }
     public boolean replacesBodyOrientation() { return active && ((masks[0] | masks[1]) & 1) != 0; }
-    public void reset() { active = false; eligible = false; legacy = false; managed = false; profileId = "morphmod:vanilla"; Arrays.fill(masks, 0); Arrays.fill(look, 0); }
+    public void reset() { active = false; eligible = false; legacy = false; managed = false; firstPerson = false; hipPivot = false; ownsCrouch = false; profileId = "morphmod:vanilla"; Arrays.fill(masks, 0); Arrays.fill(look, 0); }
     public void extract(Player player, float partialTick) {
         reset();
         eligible = player.isAlive() && !player.isSpectator()
             && player.getAttached(com.takumistudios.morphmod.data.MorphAttachments.CURRENT_MORPH) == null
             && player.getAttached(com.takumistudios.morphmod.data.MorphAttachments.CURRENT_CHARACTER) == null;
         if (!eligible) return;
-        managed = ClientAnimationProfiles.managed();
-        profileId = managed ? ClientAnimationProfiles.selected(player.getUUID()) : "morphmod:legacy_walk";
+        // A local preview only ever replaces the local player's own profile.
+        AnimationProfile preview = player == Minecraft.getInstance().player ? ClientAnimationProfiles.preview() : null;
+        managed = preview != null || ClientAnimationProfiles.managed();
+        profileId = preview != null ? preview.id() : managed ? ClientAnimationProfiles.selected(player.getUUID()) : "morphmod:legacy_walk";
         legacy = profileId.equals("morphmod:legacy_walk");
-        AnimationProfile profile = ClientAnimationProfiles.get(profileId);
+        AnimationProfile profile = preview != null ? preview : ClientAnimationProfiles.get(profileId);
         if (profile == null || ClientAnimationProfiles.failed(profile.hash())) return;
+        hipPivot = profile.hipPivot(); firstPerson = profile.firstPerson();
         try {
             for (float[] bone : values) { Arrays.fill(bone, 0); bone[6] = bone[7] = bone[8] = 1; }
             double age = (player.tickCount + partialTick) / 20.0;
@@ -76,6 +84,8 @@ public final class PlayerAnimationPose {
             if (movement == null) movement = profile.resolve(action);
             double elapsed = ClientAnimationProfiles.phase(player.getUUID(), profile.hash(), action, clock);
             apply(movement, movement != null && movement.length() > 0 && !movement.loop() ? elapsed : clock);
+            // A crouch clip that poses the torso owns the whole crouch; vanilla's offsets would be applied twice.
+            ownsCrouch = player.isCrouching() && movement != null && movement.bones().containsKey("body");
             boolean priorityRight = player.isUsingItem()
                 ? (player.getUsedItemHand() == InteractionHand.MAIN_HAND) == (player.getMainArm() == HumanoidArm.RIGHT)
                 : (player.getMainArm() == HumanoidArm.RIGHT);
@@ -157,7 +167,7 @@ public final class PlayerAnimationPose {
     }
     private void buildRig() {
         for (int i = 0; i < 11; i++) {
-            float[] value = values[i], pivot = PIVOT[i];
+            float[] value = values[i], pivot = i == 2 && hipPivot ? HIP_PIVOT : PIVOT[i];
             inheritedLook[i] = look[i] | (PARENT[i] < 0 ? 0 : inheritedLook[PARENT[i]]);
             // These transforms run in vanilla model space, AFTER LivingEntityRenderer's axis flip.
             // Bedrock-facing humanoid angles therefore keep their signs; only position Y is inverted.
@@ -172,6 +182,7 @@ public final class PlayerAnimationPose {
     public float armValue(boolean right, int slot) { return values[right ? 5 : 6][slot]; }
     public void apply(HumanoidModel<?> model) {
         if (!active) return;
+        if (ownsCrouch) { rest(model.body); rest(model.head); rest(model.rightArm); rest(model.leftArm); rest(model.rightLeg); rest(model.leftLeg); }
         part(model.body, 2, false); part(model.head, 4, true); part(model.rightArm, 5, false); part(model.leftArm, 6, false); part(model.rightLeg, 7, false); part(model.leftLeg, 8, false);
     }
     public void applyEquipmentRoot(ModelPart root) {
@@ -181,6 +192,7 @@ public final class PlayerAnimationPose {
         root.setRotation(scratchAngles.x, scratchAngles.y, scratchAngles.z);
         root.xScale *= scale[2].x; root.yScale *= scale[2].y; root.zScale *= scale[2].z;
     }
+    private static void rest(ModelPart part) { var initial = part.getInitialPose(); part.setPos(initial.x(), initial.y(), initial.z()); }
     private void part(ModelPart part, int index, boolean head) {
         int parent = PARENT[index]; float[] value = values[index]; int mask = masks[index];
         if ((mask & 1) != 0) {
@@ -192,6 +204,12 @@ public final class PlayerAnimationPose {
         }
         if ((mask & 2) != 0) {
             var initial = part.getInitialPose(); part.x = initial.x() + value[3]; part.y = initial.y() - value[4]; part.z = initial.z() + value[5];
+        }
+        if (index == 2 && hipPivot) {
+            // The torso part turns about the neck; shift it so the same rotation and scale pivot at the hip.
+            float yScale = (mask & 4) == 0 ? part.yScale : value[7];
+            scratchRotation.rotationZYX(part.zRot, part.yRot, part.xRot).transform(scratchPosition.set(0, -HIP_Y * yScale, 0));
+            part.x += scratchPosition.x; part.y += scratchPosition.y + HIP_Y; part.z += scratchPosition.z;
         }
         world[parent].transformPosition(scratchPosition.set(part.x, part.y, part.z)); part.setPos(scratchPosition.x, scratchPosition.y, scratchPosition.z);
         scratchRotation.set(rotation[parent]).rotateZYX(part.zRot, part.yRot, part.xRot).getEulerAnglesZYX(scratchAngles);

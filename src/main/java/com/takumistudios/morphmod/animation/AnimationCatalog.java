@@ -27,24 +27,11 @@ public final class AnimationCatalog {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Path root = root(); Files.createDirectories(root);
-                Path example = root.resolve("dedsafio_4");
-                if (!Files.exists(example)) {
-                    Files.createDirectories(example);
-                    for (String name : List.of("profile.json", "dedsafio_4.animation.json")) {
-                        try (InputStream input = AnimationCatalog.class.getResourceAsStream("/animations/dedsafio_4/" + name)) {
-                            if (input == null) throw new IOException("Missing bundled animation " + name);
-                            Files.copy(input, example.resolve(name));
-                        }
-                    }
-                }
+                for (String bundled : BUNDLED.keySet()) install(root.resolve(bundled), bundled);
                 Map<String, AnimationProfile> profiles = new TreeMap<>(); long size = 0;
                 try (var directories = Files.list(root)) {
                     for (Path directory : directories.filter(p -> Files.isDirectory(p, LinkOption.NOFOLLOW_LINKS)).sorted().toList()) {
-                        Path manifest = directory.resolve("profile.json");
-                        byte[] metadata = read(directory, manifest);
-                        JsonObject json = JsonParser.parseString(new String(metadata, StandardCharsets.UTF_8)).getAsJsonObject();
-                        String filename = CharacterDefinition.path(json.get("animations").getAsString());
-                        AnimationProfile profile = AnimationProfile.parse(AnimationProfile.document(metadata, read(directory, directory.resolve(filename))));
+                        AnimationProfile profile = loadDirectory(directory);
                         if (AnimationProfile.builtin(profile.id()) || profiles.putIfAbsent(profile.id(), profile) != null) throw new IOException("Reserved or duplicate animation id " + profile.id());
                         size += profile.data().length;
                         if (profiles.size() > 128 || size > 64 * 1024 * 1024) throw new IOException("Animation catalog exceeds limit");
@@ -60,6 +47,47 @@ public final class AnimationCatalog {
                 return new Snapshot(Map.copyOf(profiles), settings);
             } catch (IOException | RuntimeException e) { throw new CompletionException(e); }
         }, executor());
+    }
+    /** Bundled profiles and the SHA-256 of every file version previously shipped, per file. */
+    private static final Map<String, Map<String, Set<String>>> BUNDLED = Map.of(
+        "dedsafio_3", Map.of("profile.json", Set.of(), "dedsafio_3.animation.json", Set.of()),
+        "dedsafio_4", Map.of(
+            "profile.json", Set.of("5342fade5887aafb1b510258c54cc20eddfb7d8e0336ff1af3f44fd9b5156762"),
+            "dedsafio_4.animation.json", Set.of("a1a7c83693712895f9b9bf67c6ac5e8d2f513823c0f1c18a32eec656f19adab0", "09373447fd3db751d4660eb3fc3854b3a8e81201906ca2ac18e57800f925ac7e")));
+    /** Copies a missing bundled profile, or refreshes it only when every file is an unedited earlier release. */
+    static void install(Path directory, String bundled) throws IOException {
+        Map<String, Set<String>> files = BUNDLED.get(bundled);
+        if (Files.exists(directory, LinkOption.NOFOLLOW_LINKS)) {
+            if (!Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) return;
+            for (var file : files.entrySet()) {
+                Path path = directory.resolve(file.getKey());
+                if (!Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS) || Files.size(path) > 16 * 1024 * 1024) return;
+                String hash = sha256(Files.readAllBytes(path));
+                if (!file.getValue().contains(hash) && !hash.equals(sha256(resource(bundled, file.getKey())))) return;
+            }
+        } else Files.createDirectories(directory);
+        for (String name : files.keySet()) {
+            byte[] data = resource(bundled, name); Path target = directory.resolve(name);
+            if (!Files.exists(target) || !Arrays.equals(Files.readAllBytes(target), data)) atomicWrite(target, new String(data, StandardCharsets.UTF_8));
+        }
+    }
+    private static byte[] resource(String bundled, String name) throws IOException {
+        try (InputStream input = AnimationCatalog.class.getResourceAsStream("/animations/" + bundled + "/" + name)) {
+            if (input == null) throw new IOException("Missing bundled animation " + name);
+            return input.readAllBytes();
+        }
+    }
+    private static String sha256(byte[] data) {
+        try { return HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(data)); }
+        catch (java.security.NoSuchAlgorithmException e) { throw new IllegalStateException(e); }
+    }
+    /** Reads and validates one profile folder (profile.json plus its animation file). */
+    public static AnimationProfile loadDirectory(Path directory) throws IOException {
+        if (!Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) throw new IOException("Missing animation profile folder " + directory.getFileName());
+        byte[] metadata = read(directory, directory.resolve("profile.json"));
+        JsonObject json = JsonParser.parseString(new String(metadata, StandardCharsets.UTF_8)).getAsJsonObject();
+        String filename = CharacterDefinition.path(json.get("animations").getAsString());
+        return AnimationProfile.parse(AnimationProfile.document(metadata, read(directory, directory.resolve(filename))));
     }
     private static byte[] read(Path directory, Path file) throws IOException {
         if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || !file.toRealPath().startsWith(directory.toRealPath()) || Files.size(file) > 16 * 1024 * 1024)

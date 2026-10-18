@@ -7,12 +7,44 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AnimationProfilesTest {
-    private AnimationProfile bundled() throws Exception {
-        try (var manifest = getClass().getResourceAsStream("/animations/dedsafio_4/profile.json");
-             var animation = getClass().getResourceAsStream("/animations/dedsafio_4/dedsafio_4.animation.json")) {
+    private AnimationProfile bundled() throws Exception { return bundled("dedsafio_4"); }
+    private AnimationProfile bundled(String name) throws Exception {
+        try (var manifest = getClass().getResourceAsStream("/animations/" + name + "/profile.json");
+             var animation = getClass().getResourceAsStream("/animations/" + name + "/" + name + ".animation.json")) {
             assertNotNull(manifest); assertNotNull(animation);
             return AnimationProfile.parse(AnimationProfile.document(manifest.readAllBytes(), animation.readAllBytes()));
         }
+    }
+    private static AnimationProfile inline(String manifestExtra, String animations) {
+        String manifest = "{\"schemaVersion\":1,\"id\":\"test:inline\",\"name\":\"Inline\",\"animations\":\"a.json\"" + manifestExtra + "}";
+        return AnimationProfile.parse(AnimationProfile.document(manifest.getBytes(StandardCharsets.UTF_8), ("{\"animations\":" + animations + "}").getBytes(StandardCharsets.UTF_8)));
+    }
+    @Test void bundledDedsafioProfilesImportCleanlyWithHipPivot() throws Exception {
+        for (String name : List.of("dedsafio_3", "dedsafio_4")) {
+            var profile = bundled(name); assertEquals("morphmod:" + name, profile.id());
+            assertTrue(profile.hipPivot(), name); assertFalse(profile.firstPerson(), name);
+            for (String action : List.of("walk", "sneak", "sneak_walk", "swim", "elytra", "sleep", "sit", "swing.main_hand", "bow_rightArm"))
+                assertNotNull(profile.resolve(action), name + " " + action);
+            assertTrue(profile.warnings().stream().noneMatch(w -> w.contains("query.pitch") || w.contains("bed rotation")), name + " " + profile.warnings());
+        }
+        assertTrue(bundled("dedsafio_3").warnings().stream().noneMatch(w -> w.contains("omitted bone")));
+    }
+    @Test void manifestOptionsAreValidated() {
+        assertFalse(inline("", "{}").hipPivot());
+        assertTrue(inline(",\"bodyPivot\":\"hip\",\"firstPerson\":true", "{}").firstPerson());
+        assertThrows(IllegalArgumentException.class, () -> inline(",\"bodyPivot\":\"knee\"", "{}"));
+        assertThrows(IllegalArgumentException.class, () -> inline(",\"bodyPivot\":1", "{}"));
+        assertThrows(IllegalArgumentException.class, () -> inline(",\"firstPerson\":\"yes\"", "{}"));
+    }
+    @Test void importWarnsAboutKnownPoseProblems() {
+        var profile = inline("", "{\"sneaking\":{\"bones\":{\"head_scale\":{\"rotation\":[-25,0,0]}}},"
+            + "\"swimming\":{\"bones\":{\"waist\":{\"rotation\":[90,0,0]}}},\"elytra\":{\"bones\":{\"waist\":{\"rotation\":[\"90+query.pitch\",0,0]}}},"
+            + "\"sleep\":{\"bones\":{\"waist\":{\"rotation\":[-90,0,0]}}}}");
+        var warnings = String.join("\n", profile.warnings());
+        assertTrue(warnings.contains("omitted bone head_scale; map it with boneAliases {\"head_scale\": \"head\"}"), warnings);
+        assertTrue(warnings.contains("swimming: waist rotation ignores where the player looks"), warnings);
+        assertFalse(warnings.contains("elytra: waist rotation"), warnings);
+        assertTrue(warnings.contains("sleep: waist rotation is added to the vanilla bed rotation"), warnings);
     }
     @Test void originalFileImportsAllActionsWithoutGeometryAndReportsUnsupportedBone() throws Exception {
         var profile = bundled(); assertEquals("morphmod:dedsafio_4", profile.id());

@@ -17,6 +17,7 @@ public class MorphModClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		com.takumistudios.morphmod.client.render.PlayerAnimationConfig.init();
 		com.takumistudios.morphmod.client.animation.ClientAnimationProfiles.init();
+		com.takumistudios.morphmod.client.animation.AnimationPreviewCommand.init();
 		MorphKeybinds.init();
 		com.takumistudios.morphmod.client.character.CharacterRenderManager.init();
 		com.takumistudios.morphmod.client.character.ClientCharacters.init();
