@@ -5,8 +5,8 @@
 	"name": "Morph tests",
 	"environment": "*",
 	"entrypoints": {
-		"fabric-gametest": ["com.takumistudios.morphmod.test.MorphGameTests", "com.takumistudios.morphmod.test.CharacterGameTests"],
-		"fabric-client-gametest": ["com.takumistudios.morphmod.test.MorphClientGameTest", "com.takumistudios.morphmod.test.CharacterMultiplayerGameTest"]
+		"fabric-gametest": ["com.takumistudios.morphmod.test.MorphGameTests", "com.takumistudios.morphmod.test.CharacterGameTests", "com.takumistudios.morphmod.test.AnimationGameTests"],
+		"fabric-client-gametest": ["com.takumistudios.morphmod.test.MorphClientGameTest", "com.takumistudios.morphmod.test.CharacterMultiplayerGameTest", "com.takumistudios.morphmod.test.AnimationClientGameTest"]
 	},
 	"depends": {
 		"morphmod": "*"

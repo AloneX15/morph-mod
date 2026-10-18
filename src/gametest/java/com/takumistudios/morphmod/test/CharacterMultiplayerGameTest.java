@@ -23,6 +23,7 @@ public final class CharacterMultiplayerGameTest implements FabricClientGameTest 
                 server.runCommand("whitelist off");
                 Path childDir = FabricLoader.getInstance().getGameDir().resolve("observer").toAbsolutePath();
                 Files.createDirectories(childDir); Files.deleteIfExists(childDir.resolve("observer.ready"));
+                Files.deleteIfExists(childDir.resolve("observer.full.ready")); Files.deleteIfExists(childDir.resolve("observer.animation.ready"));
                 Process observer = launch(port, childDir);
                 try {
                     context.waitFor(mc -> {
@@ -31,6 +32,9 @@ public final class CharacterMultiplayerGameTest implements FabricClientGameTest 
                     }, 2400);
                     server.runCommand("tp Player0 0.5 -60 0.5");
                     server.runCommand("tp MorphObserver 0.5 -60 -3.5");
+                    server.runCommand("morph animation force morphmod:dedsafio_4");
+                    context.waitFor(mc -> Files.exists(childDir.resolve("observer.animation.ready")), 1200);
+                    server.runCommand("morph animation force off");
                     context.runOnClient(mc -> ClientPlayNetworking.send(new CharacterActionPayload("select", "morphmod:otter", "")));
                     context.waitFor(mc -> CharacterManager.selected(mc.player).equals("morphmod:otter"));
                     context.runOnClient(mc -> ClientPlayNetworking.send(new CharacterActionPayload("play", "demo_dance", "full")));
@@ -82,6 +86,25 @@ public final class CharacterMultiplayerGameTest implements FabricClientGameTest 
             net.minecraft.client.gui.screens.ConnectScreen.startConnecting(screen, mc, net.minecraft.client.multiplayer.resolver.ServerAddress.parseString(address), data, false, null);
         });
         context.waitFor(mc -> mc.player != null && mc.level != null && ClientCharacters.get("morphmod:otter") != null, 2400);
+        context.waitFor(mc -> com.takumistudios.morphmod.client.animation.ClientAnimationProfiles.get("morphmod:dedsafio_4") != null
+            && mc.level.players().stream().anyMatch(p -> p != mc.player && p.onGround()
+                && com.takumistudios.morphmod.client.animation.ClientAnimationProfiles.selected(p.getUUID()).equals("morphmod:dedsafio_4")), 1200);
+        context.runOnClient(mc -> {
+            var player = mc.level.players().stream().filter(p -> p != mc.player).findFirst().orElseThrow();
+            var renderer = (net.minecraft.client.renderer.entity.player.AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer>)mc.getEntityRenderDispatcher().getRenderer(player);
+            var state = renderer.createRenderState(player, 0);
+            if (!((com.takumistudios.morphmod.client.render.PlayerWalkState)state).morphmod$animationPose().active) throw new AssertionError("Remote human profile is not animated");
+            mc.player.setYRot(0); mc.player.setXRot(0);
+        });
+        //? if >=26.2 {
+        context.waitFor(mc -> mc.gui.overlay() == null, 600);
+        //?} else {
+        /*context.waitFor(mc -> mc.getOverlay() == null, 600);
+        *///?}
+        context.waitTicks(5);
+        context.takeScreenshot("animation-profile-multiplayer");
+        try { Files.writeString(FabricLoader.getInstance().getGameDir().resolve("observer.animation.ready"), "ready"); }
+        catch (java.io.IOException e) { throw new AssertionError(e); }
         context.waitFor(mc -> remoteMode(mc, "full"), 1200);
         //? if >=26.2 {
         context.waitFor(mc -> mc.gui.overlay() == null, 600);

@@ -5,9 +5,12 @@ una API equivalente para sustituir el modelo de un jugador y mantener sus colisi
 
 | Mixin | Objetivo | Motivo | Riesgo de conflicto |
 |---|---|---|---|
-| PlayerWalkStateMixin | `AvatarRenderState` | Conserva velocidad horizontal y elegibilidad extraídas para el caminar humano. | Otros mods que sustituyan el estado de avatar. |
-| PlayerWalkExtractionMixin | `AvatarRenderer.extractRenderState` | Extrae solo jugadores humanos en suelo; excluye maniquíes, morphs y estados especiales. Reinicia los datos al reutilizar estados. | Mods que reemplacen por completo la extracción del avatar. |
-| PlayerWalkModelMixin | `HumanoidModel.setupAnim`, antes de `isPassenger` | Sustituye el movimiento base de jugadores humanos y su armadura antes de poses de objetos y combate. | Mods de animaciones del jugador; desactivar `playerWalkAnimation` en la configuración cliente. |
+| PlayerWalkStateMixin | `AvatarRenderState` | Conserva velocidad, elegibilidad y snapshot del rig humano por estado de render. | Otros mods que sustituyan el estado de avatar. |
+| PlayerWalkExtractionMixin | `AvatarRenderer.extractRenderState` | Extrae el perfil humano asignado y compila su pose; el caminar legado solo se activa en suelo. Excluye maniquíes y morphs. | Mods que reemplacen por completo la extracción del avatar. |
+| PlayerWalkModelMixin | `HumanoidModel.setupAnim`, antes de `isPassenger` y al final | Conserva el port legado y aplica los canales de perfiles importados a jugadores y armadura. | Mods de animaciones del jugador; el administrador puede asignar `morphmod:vanilla`. |
+| AnimationRotationsMixin | `AvatarRenderer.setupRotations` | Evita duplicar la inclinación de natación/élitros cuando el perfil anima root/waist. Restaura siempre el estado tras la llamada. | Mods que sustituyan rotaciones globales del avatar. |
+| AnimationWingsMixin | `ElytraModel.setupAnim` | Adjunta las alas al torso virtual cuando la orientación global la controla el perfil. | Otros mods que sustituyan el modelo de élitros. |
+| AnimationFirstPersonMixin | `FirstPersonHandsAndItemsRenderer.submitArmWithItem` (26.3), `ItemInHandRenderer.submitArmWithItem` (26.2) / `renderArmWithItem` (26.1.x) | Dibuja brazos y objetos humanos importados desde un anclaje de hombro acotado; mantiene mapas y visor vanilla. | Otros reemplazos del render en primera persona. |
 | AvatarMixin | `Avatar.getDefaultDimensions` | Hitbox y altura de ojos de la forma; excluye dormir y morir. | Mods de tamaño y otros sistemas de morph. |
 | PlayerMixin | `Player.onClimbable` | Trepar paredes solo para formas con esa pasiva. | Mods de movimiento y escalada. |
 | LevelExtractorMixin | `LevelExtractor.extractVisibleEntities` (26.2+) / `LevelRenderer.extractVisibleEntities` (26.1.x) | Sustituye únicamente el estado de render de jugadores transformados mediante WrapOperation. | Mods que sustituyen completamente la extracción de entidades. |

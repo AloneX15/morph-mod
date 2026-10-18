@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"morphmod:dedsafio_4","name":"Dedsafio 4","animations":"dedsafio_4.animation.json","bindings":{"walk":"idle","run":"idle","sneak_walk":"sneaking"},"boneAliases":{}}

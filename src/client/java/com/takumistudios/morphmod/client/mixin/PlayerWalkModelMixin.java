@@ -26,8 +26,8 @@ public abstract class PlayerWalkModelMixin {
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V",
         at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;isPassenger:Z", ordinal = 0))
     private void morphmod$walk(HumanoidRenderState state, CallbackInfo ci) {
-        if (!com.takumistudios.morphmod.client.render.PlayerAnimationConfig.enabled()
-            || !(state instanceof PlayerWalkState walk) || !walk.morphmod$walkEnabled()
+        if (!(state instanceof PlayerWalkState walk) || !walk.morphmod$walkEnabled()
+            || (walk.morphmod$animationPose().managed ? !walk.morphmod$animationPose().legacy : !com.takumistudios.morphmod.client.render.PlayerAnimationConfig.enabled())
             || state.isFallFlying || state.swimAmount > 0 || state.isAutoSpinAttack || state.deathTime > 0) return;
         float age = state.ageInTicks, speed = walk.morphmod$groundSpeed();
         boolean crouch = state.isCrouching;
@@ -48,5 +48,10 @@ public abstract class PlayerWalkModelMixin {
             body.zRot = PlayerLocomotion.roll(age, speed, false);
             head.zRot = PlayerLocomotion.roll(age, speed, true);
         }
+    }
+
+    @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At("TAIL"))
+    private void morphmod$profile(HumanoidRenderState state, CallbackInfo ci) {
+        if (state instanceof PlayerWalkState walk) walk.morphmod$animationPose().apply((HumanoidModel<?>)(Object)this);
     }
 }

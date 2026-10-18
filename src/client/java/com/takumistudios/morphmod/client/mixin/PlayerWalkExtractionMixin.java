@@ -17,6 +17,8 @@ public abstract class PlayerWalkExtractionMixin {
     @Inject(method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V", at = @At("TAIL"))
     private void morphmod$walk(Avatar avatar, AvatarRenderState state, float partialTick, CallbackInfo ci) {
         PlayerWalkState walk = (PlayerWalkState)state;
+        walk.morphmod$animationPose().reset();
+        if (avatar instanceof Player player) walk.morphmod$animationPose().extract(player, partialTick);
         // Render states are reused: reset even for mannequins and fallback morph renders.
         walk.morphmod$setWalk(false, 0);
         if (!(avatar instanceof Player player) || !player.onGround() || player.onClimbable()

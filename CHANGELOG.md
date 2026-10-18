@@ -5,6 +5,10 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y e
 
 ## [Unreleased]
 
+- Catálogo de perfiles completos de animación humana en el servidor: importación de JSON MoLang/keyframes, distribución por hash, recarga y adaptación del rig vanilla en tercera y primera persona.
+- Comandos `/morph animation`, perfil global, excepciones persistentes por UUID, reglas de LuckPerms con prioridades y modo global forzado temporal. El servidor prevalece sobre la preferencia visual local.
+- Perfiles incluidos `morphmod:vanilla`, `morphmod:legacy_walk` y `morphmod:dedsafio_4`; guía de administración en `docs/ANIMACIONES.md` y pruebas de servidor, cliente y sincronización multijugador.
+
 - Caminar humano adaptado de los canales `idle` y `sneaking` de `dedsafio_4.animation.json` a 26.1.x, 26.2 y 26.3, con la skin y armadura del jugador. Conserva poses vanilla de objetos y combate; configuración cliente `playerWalkAnimation` para desactivarlo.
 
 - Corregido: al terminar un emote, su pose seguía en bucle sobre los brazos y tapaba las animaciones de arco, escudo, ballesta y objetos. Los controladores de animación se reinician al detenerse.

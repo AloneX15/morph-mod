@@ -67,5 +67,10 @@
   "screen.morphmod.emote_mode.full": "Full body",
   "commands.morphmod.characters.list": "Characters: %s",
   "screen.morphmod.equipment.shown": "Morph equipment: visible (armor and held items)",
-  "screen.morphmod.equipment.hidden": "Morph equipment: hidden (armor and held items)"
+  "screen.morphmod.equipment.hidden": "Morph equipment: hidden (armor and held items)",
+  "commands.morphmod.animations.busy": "An animation operation is already in progress. Try again when it finishes.",
+  "commands.morphmod.animations.failed": "Could not load or save animation profiles. Previous settings retained; see the log.",
+  "commands.morphmod.animations.output": "%s",
+  "commands.morphmod.animations.unknown": "Unknown animation profile: %s",
+  "commands.morphmod.animations.updated": "Animation profiles updated."
 }

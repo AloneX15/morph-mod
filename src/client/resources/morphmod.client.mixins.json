@@ -12,7 +12,10 @@
 		"WalkAnimationStateAccessor",
 		"PlayerWalkStateMixin",
 		"PlayerWalkExtractionMixin",
-		"PlayerWalkModelMixin"
+		"PlayerWalkModelMixin",
+		"AnimationRotationsMixin",
+		"AnimationFirstPersonMixin",
+		"AnimationWingsMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

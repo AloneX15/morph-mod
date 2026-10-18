@@ -32,9 +32,10 @@ public class MorphMod implements ModInitializer {
 		MorphEvents.init();
 		com.takumistudios.morphmod.character.CharacterPermissions.init();
 		com.takumistudios.morphmod.network.CharacterNetworking.init();
+		com.takumistudios.morphmod.network.AnimationNetworking.init();
 		FeatureGuard commands = new FeatureGuard("command registration");
 		CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> commands.run(() -> MorphCommand.register(dispatcher, context)));
-		ServerLifecycleEvents.SERVER_STOPPING.register(server -> { MorphConfig.shutdown(); com.takumistudios.morphmod.character.CharacterCatalog.shutdown(); });
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> { MorphConfig.shutdown(); com.takumistudios.morphmod.character.CharacterCatalog.shutdown(); com.takumistudios.morphmod.animation.AnimationCatalog.shutdown(); });
 		String version = FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow().getMetadata().getVersion().getFriendlyString();
 		LOGGER.info("Morph {} cargado. Creado por TakumiStudios.", version);
 	}

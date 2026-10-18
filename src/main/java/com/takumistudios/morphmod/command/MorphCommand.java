@@ -28,6 +28,7 @@ public final class MorphCommand {
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
 		CharacterCommands.register(dispatcher);
+		AnimationCommands.register(dispatcher);
 		dispatcher.register(Commands.literal("morph")
 			.then(Commands.literal("list").executes(new SafeCommand(c -> list(c.getSource(), c.getSource().getPlayerOrException()))))
 			.then(Commands.literal("into")

@@ -90,20 +90,45 @@ Se excluyen jugadores, soportes para armaduras, maniquíes y el dragón. En el m
 
 ## Configuración
 
-### Caminar con la skin del jugador
+### Perfiles de animación administrados por el servidor
 
-Los jugadores en forma humana usan una adaptación nativa para **26.1.x, 26.2 y
-26.3** del caminar procedural de `dedsafio_4.animation.json`: balanceo de brazos
-y piernas, ligera oscilación del torso y cabeza y movimiento agachado más lento.
-Funciona con skins normales y slim y conserva las capas de la skin y la armadura.
-Se activa automáticamente; no necesitas copiar el JSON original ni un modelo GeckoLib.
+El servidor puede elegir las animaciones de los jugadores humanos para **26.1.x,
+26.2 y 26.3**, conservando su skin normal o slim, armadura y objetos. Los perfiles
+pueden incluir caminar, agacharse, ataques, uso de objetos, natación, élitros y
+otras poses, con brazos y objetos adaptados también en primera persona.
 
-El port cubre los canales `idle` y `sneaking` del archivo. Las poses de objetos,
-ataques, saltos, natación, élitros, monturas y sueño siguen las animaciones de
-Minecraft. Los morphs de mobs y personajes personalizados mantienen sus animaciones.
-No cambia velocidad, colisión, estadísticas ni brazos en primera persona.
+Sube una carpeta con `profile.json` y su `.animation.json` a
+`config/morphmod/animations/` en el servidor. Recarga y elige el perfil:
 
-Cada cliente puede desactivarlo en `config/morphmod-client.json` y reiniciar el juego:
+```text
+/morph animation reload
+/morph animation list
+/morph animation default morphmod:dedsafio_4
+/morph animation set Nombre morphmod:vanilla
+/morph animation status Nombre
+/morph animation reset Nombre
+```
+
+`default` establece la base para todos, incluidos los nuevos jugadores; `set`
+guarda excepciones individuales y admite selectores como `@a`. El permiso de
+administración es `morphmod.animations.admin` (OP 2 si LuckPerms no lo define).
+
+Las reglas de `config/morphmod/animations.json` vinculan nodos de LuckPerms con
+perfiles y prioridades. Se respeta la herencia y los contextos. El orden es:
+**forzado → jugador → LuckPerms → global**. Las excepciones sobreviven a muerte,
+reconexión y reinicio. `force <perfil>` y `force off` permiten una imposición temporal.
+
+Se incluyen `morphmod:vanilla`, `morphmod:legacy_walk` (predeterminado, el caminar
+anterior) y `morphmod:dedsafio_4` (archivo original completo adaptado). Los clientes
+compatibles reciben los archivos automáticamente y el servidor tiene prioridad
+sobre su preferencia local. Los morphs y personajes mantienen sus propias animaciones.
+
+Consulta [la guía de perfiles](docs/ANIMACIONES.md) para el manifiesto, comandos,
+reglas de LuckPerms, primera persona, límites y avisos de adaptación. No todos los
+huesos de un modelo personalizado pueden reproducirse exactamente con una skin vanilla.
+
+Fuera de servidores administrados, puedes desactivar el caminar anterior en
+`config/morphmod-client.json` y reiniciar Minecraft:
 
 ```json
 {
@@ -112,8 +137,8 @@ Cada cliente puede desactivarlo en `config/morphmod-client.json` y reiniciar el 
 }
 ```
 
-Por defecto es `true`. Este ajuste es local: cada observador decide cómo ve a los
-jugadores humanos. Para usar otro mod de animaciones del jugador, puedes desactivarlo.
+Por defecto es `true`. En un servidor administrado se usa su perfil; un administrador
+puede asignar `morphmod:vanilla` globalmente o como excepción para desactivar las animaciones.
 Un JSON inválido se copia a `.bak` y se regeneran los valores por defecto.
 
 ### Configuración del servidor
@@ -214,6 +239,7 @@ Referencias e historial del repositorio:
 - [Arquitectura](docs/ARQUITECTURA.md): cómo funciona por dentro y cómo añadir un mob
 - [Mobs](docs/MOBS.md): stats y poderes de cada forma
 - [Personajes y emotes](docs/PERSONAJES.md): importar modelos y animaciones GeckoLib
+- [Perfiles de animación humana](docs/ANIMACIONES.md): catálogo del servidor, LuckPerms y primera persona
 - [Changelog](CHANGELOG.md) · [Cómo contribuir](CONTRIBUTING.md)
 
 ## Hoja de ruta

@@ -7,6 +7,8 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(AvatarRenderState.class)
 public abstract class PlayerWalkStateMixin implements PlayerWalkState {
+    @Unique private final com.takumistudios.morphmod.client.animation.PlayerAnimationPose morphmod$pose = new com.takumistudios.morphmod.client.animation.PlayerAnimationPose();
+    public com.takumistudios.morphmod.client.animation.PlayerAnimationPose morphmod$animationPose() { return morphmod$pose; }
     @Unique private boolean morphmod$walk;
     @Unique private float morphmod$speed;
     public boolean morphmod$walkEnabled() { return morphmod$walk; }
